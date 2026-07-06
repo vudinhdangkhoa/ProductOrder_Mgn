@@ -1,7 +1,14 @@
 package com.example.demo.exception;
 
 public class BusinessException extends RuntimeException {
-    public BusinessException(String message) {
+    private final String errorCode;
+
+    public BusinessException(String message, String errorCode) {
         super(message);
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
     }
 }

@@ -31,7 +31,7 @@ public class UserController {
        
        User newUser = userMapper.toEntity(entity);
         
-        return userMapper.toUserResponse(newUser);
+        return userMapper.toResponse(newUser);
     }
     
 }

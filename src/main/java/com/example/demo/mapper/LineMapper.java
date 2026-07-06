@@ -18,8 +18,7 @@ public interface LineMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
+   
     @Mapping(target = "isDeleted", ignore = true)
     @Mapping(target = "isActive", ignore = true) // Field này mặc định là true từ Entity
     Line toEntity(CreateLineRequest request);

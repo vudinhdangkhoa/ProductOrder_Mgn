@@ -1,13 +1,14 @@
-package com.example.demo.service;
+package com.example.demo.service.interf;
+
+import java.time.LocalDate;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.example.demo.dto.request.CreateProductionOrderRequest;
 import com.example.demo.dto.request.UpdateProductionOrderRequest;
 import com.example.demo.dto.response.ProductionOrderResponse;
 import com.example.demo.entity.enums.ProductionOrderStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDate;
 
 public interface ProductionOrderService {
     ProductionOrderResponse createOrder(CreateProductionOrderRequest request);

@@ -2,34 +2,34 @@ package com.example.demo.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUserRequest {
-    
-    @NotBlank(message = "Email is required")
-    @Email(message= "mail khong hop le")
-    @Size(max=255,message = "email khong duoc qua 255 ky tu")
-    private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min=6,max=255,message = "password phai tu 6 den 255 ky tu")
-    private String password;
+    @NotBlank(message = "Username không được để trống")
+    @Size(min = 4, max = 50)
+    private String username;
 
-    @NotBlank(message = "Full name is required")
-    @Size(max=255,message = "full name khong duoc qua 255 ky tu")
+    @NotBlank(message = "Họ tên không được để trống")
     private String fullName;
 
-    @NotBlank(message = "role is required")
-    private Long roleId;
+    @NotBlank(message = "Email không được để trống")
+    @Email(message = "Email không hợp lệ")
+    private String email;
 
-    @NotBlank(message = "Username is required")
-    @Size(max=255,message = "username khong duoc qua 255 ky tu")
-    private String username;
+    @NotBlank(message = "Mật khẩu không được để trống")
+    @Size(min = 8, message = "Mật khẩu tối thiểu 8 ký tự")
+    private String password;
+
+    @NotNull(message = "Quyền người dùng là bắt buộc")
+    private Long roleId;
 }

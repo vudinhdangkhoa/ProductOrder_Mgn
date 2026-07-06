@@ -19,8 +19,6 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
         jdbc.batch_size: 50
-    # Enable auditing cho BaseEntity
-    defer-datasource-initialization: true
 
   # Flyway Migration
   flyway:

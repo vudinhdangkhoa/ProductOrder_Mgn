@@ -1,5 +1,13 @@
 package com.example.demo.service.impl;
 
+import java.time.LocalDate;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.dto.request.CreateProductionOrderRequest;
 import com.example.demo.dto.request.UpdateProductionOrderRequest;
 import com.example.demo.dto.response.ProductionOrderResponse;
@@ -9,16 +17,10 @@ import com.example.demo.exception.BusinessException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.ProductionOrderMapper;
 import com.example.demo.repository.ProductionOrderRepository;
-import com.example.demo.service.ProductionOrderService;
+import com.example.demo.service.interf.ProductionOrderService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 
 @Service
 @Slf4j
@@ -36,16 +38,16 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         log.info("Creating new production order: {}", request.getOrderCode());
 
         if (orderRepository.existsByOrderCode(request.getOrderCode())) {
-            throw new BusinessException("ORDER_EXISTS", "Order code already exists");
+            //throw new BusinessException("ORDER_EXISTS", "Order code already exists");
         }
 
         ProductionOrder order = orderMapper.toEntity(request);
-        order.setStatus(ProductionOrderStatus.DRAFT);
+        order.setStatus(ProductionOrderStatus.CREATED);
         
         ProductionOrder saved = orderRepository.save(order);
         
         // Bắn event để đồng bộ realtime sau khi commit
-        eventPublisher.publishEvent(new ProductionOrderEvent(saved, "CREATED"));
+       // eventPublisher.publishEvent(new ProductionOrderEvent(saved, "CREATED"));
         
         return orderMapper.toResponse(saved);
     }
@@ -80,7 +82,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         orderMapper.updateEntityFromRequest(request, order);
         ProductionOrder updated = orderRepository.save(order);
         
-        eventPublisher.publishEvent(new ProductionOrderEvent(updated, "UPDATED"));
+        //eventPublisher.publishEvent(new ProductionOrderEvent(updated, "UPDATED"));
         
         return orderMapper.toResponse(updated);
     }

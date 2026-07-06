@@ -1,9 +1,11 @@
 package com.example.demo.entity.enums;
 
-public enum StatusProductoinOrder {
+public enum ProductionOrderStatus {
     CREATED,
     CANCELLED,
     IN_PROGRESS,
     COMPLETED,
-    DELETED
+    DELETED,
+    DRAFT,
+    RELEASED
 }

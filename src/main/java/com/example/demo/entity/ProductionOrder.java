@@ -1,7 +1,15 @@
 package com.example.demo.entity;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.demo.entity.enums.ProductionOrderStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -10,10 +18,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "production_orders")
@@ -48,8 +52,9 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "is_delete", nullable = false)
     private Boolean isDelete = false;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private String status = "DRAFT";
+    private ProductionOrderStatus status = ProductionOrderStatus.DRAFT;
 
     @OneToMany(mappedBy = "productionOrder", fetch = FetchType.LAZY)
     private List<StatusProductionOrder> statusHistory = new ArrayList<>();

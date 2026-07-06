@@ -24,8 +24,7 @@ public interface ProductionOrderMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
+   
     @Mapping(target = "isDeleted", ignore = true)
     @Mapping(target = "product", ignore = true)
     @Mapping(target = "line", ignore = true)

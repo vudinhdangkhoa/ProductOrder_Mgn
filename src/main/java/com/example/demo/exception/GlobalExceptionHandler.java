@@ -1,17 +1,19 @@
 package com.example.demo.exception;
 
-import com.example.demo.dto.response.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.demo.dto.response.ApiResponse;
+
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
@@ -28,7 +30,7 @@ public class GlobalExceptionHandler {
     // 2. Xử lý lỗi logic nghiệp vụ (400)
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusiness(BusinessException ex, HttpServletRequest req) {
-        log.warn("Business error [{}]: {} | URI: {}", ex.getErrorCode(), ex.getMessage(), req.getRequestURI());
+        log.warn("Business error [{}]: {} | URI: {}", ex.getMessage(), req.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(ex.getMessage()));
     }
@@ -58,3 +60,5 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error | URI: {}", req.getRequestURI(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An unexpected error occurred. Please try again later."));
+    }
+}
