@@ -14,6 +14,7 @@ public class Demo1Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Demo1Application.class, args);
+        System.out.println("Run on: http://localhost:8080/swagger-ui/index.html");
     }
 
     @RestController

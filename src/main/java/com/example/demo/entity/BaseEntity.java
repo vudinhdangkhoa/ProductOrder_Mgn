@@ -25,7 +25,7 @@ public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -34,14 +34,7 @@ public abstract class BaseEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @CreatedBy
-    @Column(name = "created_by", length = 100, updatable = false)
-    private String createdBy;
-
-    @LastModifiedBy
-    @Column(name = "updated_by", length = 100)
-    private String updatedBy;
-
+    
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 }

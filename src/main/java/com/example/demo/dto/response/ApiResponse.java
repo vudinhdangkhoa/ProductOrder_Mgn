@@ -1,25 +1,39 @@
 package com.example.demo.dto.response;
 
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
+    private LocalDateTime timestamp;
+    
 
-    public ApiResponse(boolean success, String message, T data) {
-        this.success = success;
-        this.message = message;
-        this.data = data;
+    public static <T> ApiResponse<T> success(T data) {
+        return ApiResponse.<T>builder()
+                .success(true).data(data)
+                .timestamp(LocalDateTime.now()).build();
     }
 
-    public boolean isSuccess() {
-        return success;
+    public static <T> ApiResponse<T> success(T data, String message) {
+        return ApiResponse.<T>builder()
+                .success(true).message(message).data(data)
+                .timestamp(LocalDateTime.now()).build();
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public T getData() {
-        return data;
+    public static <T> ApiResponse<T> error(String message) {
+        return ApiResponse.<T>builder()
+                .success(false).message(message)
+                .timestamp(LocalDateTime.now()).build();
     }
 }

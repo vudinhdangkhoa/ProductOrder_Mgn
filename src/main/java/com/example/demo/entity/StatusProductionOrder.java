@@ -1,5 +1,9 @@
 package com.example.demo.entity;
 
+import java.time.LocalDateTime;
+
+import com.example.demo.entity.enums.StatusProductoinOrder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,10 +15,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-
-import com.example.demo.entity.enums.StatusProductoinOrder;
 
 @Entity
 @Table(name = "status_production_orders")
@@ -32,7 +32,7 @@ public class StatusProductionOrder extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false, length = 20)
-    private String action= StatusProductoinOrder.CREATED.name();
+    private StatusProductoinOrder action= StatusProductoinOrder.CREATED;
 
     @Column(name = "date_update")
     private LocalDateTime dateUpdate = LocalDateTime.now();

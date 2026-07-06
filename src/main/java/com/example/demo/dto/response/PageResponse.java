@@ -1,31 +1,36 @@
 package com.example.demo.dto.response;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageResponse<T> {
+
+    private List<T> content;
     private int page;
     private int size;
     private long totalElements;
-    private T content;
+    private int totalPages;
+    private boolean last;
+    private boolean first;
 
-    public PageResponse(int page, int size, long totalElements, T content) {
-        this.page = page;
-        this.size = size;
-        this.totalElements = totalElements;
-        this.content = content;
-    }
+    public static <T> PageResponse<T> of(Page<T> page) {
+        return PageResponse.<T>builder()
+                .content(page.getContent())
+                .page(page.getNumber()).size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast()).first(page.isFirst())
+                .build();
 
-    public int getPage() {
-        return page;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public long getTotalElements() {
-        return totalElements;
-    }
-
-    public T getContent() {
-        return content;
     }
 }
