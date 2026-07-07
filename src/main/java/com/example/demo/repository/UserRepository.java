@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.User;
-import com.example.demo.entity.enums.UserStatus;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -23,6 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndIsDeletedFalse(String email);
     
     Optional<User> findByUsernameAndIsDeletedFalse(String username);
+
+    Optional<User> findByEmailAndPasswordHashAndIsDeletedFalse(String email, String passwordHash);
     
     boolean existsByEmail(String email);
     
@@ -35,7 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
            "WHERE u.isDeleted = false " +
            "AND (:keyword IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<User> searchUsers(@Param("status") UserStatus status, 
+    Page<User> searchUsers(
                            @Param("keyword") String keyword, 
                            Pageable pageable);
 
@@ -44,4 +45,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Query("UPDATE User u SET u.isDeleted = true WHERE u.id = :id")
     void softDeleteById(@Param("id") Long id);
+
+    @Query("""
+        SELECT DISTINCT u
+        FROM User u
+        LEFT JOIN FETCH u.role r
+        LEFT JOIN FETCH r.rolePermissions rp
+        LEFT JOIN FETCH rp.permission
+        WHERE u.username = :username
+        AND u.isDeleted = false
+        """)
+    Optional<User> findSecurityUserByUsername(@Param("username") String username);
 }

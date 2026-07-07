@@ -51,7 +51,7 @@ CREATE TABLE categories (
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE lines (
+CREATE TABLE production_lines (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     line_code VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE production_orders (
     updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_production_orders_product FOREIGN KEY (product_id) REFERENCES products(id),
-    CONSTRAINT fk_production_orders_line FOREIGN KEY (line_id) REFERENCES lines(id),
+    CONSTRAINT fk_production_orders_line FOREIGN KEY (line_id) REFERENCES production_lines(id),
     CONSTRAINT fk_production_orders_assigned_user FOREIGN KEY (assigned_user_id) REFERENCES users(id)
 );
 

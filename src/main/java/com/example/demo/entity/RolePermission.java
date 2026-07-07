@@ -1,16 +1,22 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "role_permissions")
+@Table(
+        name = "role_permissions",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {
+                                "role_id",
+                                "permission_id"
+                        }
+                )
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

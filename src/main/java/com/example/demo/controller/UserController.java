@@ -15,12 +15,12 @@ import lombok.RequiredArgsConstructor;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor   // Tự động tạo constructor với các field final
 public class UserController {
 
     private final UserMapper userMapper;
-
+    
     @GetMapping
     public String listUsers() {
         return "User endpoint is ready";

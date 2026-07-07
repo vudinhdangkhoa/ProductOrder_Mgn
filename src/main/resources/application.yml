@@ -2,31 +2,37 @@ spring:
   application:
     name: demo1
   datasource:
-    url: jdbc:h2:mem:demo1db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
+    url: jdbc:mysql://localhost:3306/demo1db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
     password:
   h2:
     console:
-      enabled: true
+      enabled: false
   # JPA & Hibernate
   jpa:
     hibernate:
-      ddl-auto: validate # Prod dùng validate, Dev dùng update
-    show-sql: false
+      ddl-auto: update # Prod dùng validate, Dev dùng update
+    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
         jdbc.batch_size: 50
-
+    database-platform: org.hibernate.dialect.MySQLDialect
   # Flyway Migration
   flyway:
     enabled: true
     locations: classpath:db/migration
+    url: jdbc:mysql://localhost:3306/demo1db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    user: root
+    password:
 
 # JWT Secret & Expiry
 app:
   jwt:
-    secret: ${JWT_SECRET:superSecretKeyGeneratedByCompany}
-    expiration-ms: 86400000 # 24h
+    secret: VJ8P3qP2rR6hTt6zQjV5aW9yQ0FQd3hJQ0V1Y0Z6b0J4Q3E=
+    expiration-ms: 86400000        # 24 giờ cho access token
+    refresh-expiration-ms: 604800000  # 7 ngày cho refresh token
+  seed-data:
+    enabled: true

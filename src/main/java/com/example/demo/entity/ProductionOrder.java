@@ -53,7 +53,7 @@ public class ProductionOrder extends BaseEntity {
     private Boolean isDelete = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
+    @Column(name = "status", nullable = false, length = 20,columnDefinition = "VARCHAR(50)")
     private ProductionOrderStatus status = ProductionOrderStatus.DRAFT;
 
     @OneToMany(mappedBy = "productionOrder", fetch = FetchType.LAZY)
