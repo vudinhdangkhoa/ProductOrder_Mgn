@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Product;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import com.example.demo.entity.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -28,12 +29,27 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p " +
            "WHERE p.isDeleted = false " +
-           "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
+           "AND (:category_id IS NULL OR p.category.id = :category_id) " +
            "AND (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(p.productCode) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-    Page<Product> searchProducts(@Param("categoryId") Long categoryId,
+    Page<Product> searchProducts(@Param("category_id") Long categoryId,
                                  @Param("keyword") String keyword,
                                  Pageable pageable);
+
+    @Query("SELECT p FROM Product p " +
+           "WHERE (COALESCE(:name, '') = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+           "OR (:category_id IS NULL OR p.category.id = :category_id) " +
+           "OR (COALESCE(:product_code, '') = '' OR LOWER(p.productCode) LIKE LOWER(CONCAT('%', :product_code, '%'))) " +
+           "OR (:is_active IS NULL OR p.isActive = :is_active) " +
+           "OR (:is_deleted IS NULL OR p.isDeleted = :is_deleted)")
+    Page<Product> findAllWithFilters(
+            Pageable pageable,
+            @Param("name") String name,
+            @Param("category_id") Long categoryId,
+            @Param("is_active") Boolean isActive,
+            @Param("is_deleted") Boolean isDeleted,
+            @Param("product_code") String productCode
+    );
 
     @Modifying
     @Transactional

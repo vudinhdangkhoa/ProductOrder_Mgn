@@ -1,25 +1,144 @@
 package com.example.demo.service.impl;
 
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.request.CreateUserRequest;
+import com.example.demo.dto.request.UpdateUserRequest;
 import com.example.demo.dto.response.UserResponse;
+import com.example.demo.entity.Role;
+import com.example.demo.entity.User;
+import com.example.demo.exception.DuplicateResourceException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.interf.UserService;
+import com.example.demo.util.PasswordUtil;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
+   
 
     @Override
     public UserResponse getUserById(Long id) {
-       return null;
+        return null;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserResponse> getAllUsers(Pageable pageable) {
+
+        return userRepository.findAllByIsDeletedFalse(pageable)
+                .map(userMapper::toResponse);
+    }
+
+    @Override
+    public UserResponse createUser(CreateUserRequest request) {
+        
+        try{
+
+            //kiểm tra email và username đã tồn tại chưa
+            if(userRepository.existsByEmail(request.getEmail())){
+                throw new DuplicateResourceException("Email đã tồn tại: " + request.getUsername());
+            }
+
+            //fetch role từ DB
+            Role role = roleRepository.findById(request.getRoleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Role không tồn tại: " + request.getRoleId(), request.getRoleId()));
+
+            //tạo user entity từ request
+            User user = userMapper.toEntity(request);
+
+            //gán role cho user
+            user.setRole(role);
+
+            //hash password
+            String hashedPassword = PasswordUtil.hashPassword(request.getPassword());
+            user.setPasswordHash(hashedPassword);
+
+            //lưu user vào DB
+            return userMapper.toResponse(userRepository.save(user));
+
+
+        }
+        catch(DuplicateResourceException | ResourceNotFoundException e){
+            throw e;
+        }
+        
+        catch(Exception e){
+            log.error("Lỗi khi tạo người dùng: ", e);
+            throw new RuntimeException("Lỗi khi tạo người dùng: " + e.getMessage());
+
+
+
+        }
+        
+
+    }
+
+    @Override
+    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+
+       try{
+
+            //tìm user theo id
+            User user = userRepository.findByIdAndIsDeletedFalse(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại", id));
+
+            //cập nhật thông tin từ request
+            userMapper.updateEntityFromRequest(request, user);
+
+            //lưu thay đổi vào DB
+            return userMapper.toResponse(userRepository.save(user));
+        
+
+       }
+       catch(ResourceNotFoundException e){
+            throw e;
+        }
+        catch(Exception e){
+            log.error("Lỗi khi cập nhật người dùng: ", e);
+            throw new RuntimeException("Lỗi khi cập nhật người dùng: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        
+        userRepository.softDeleteById(id);
+        
+        return ;
+    }
+
+    @Override
+    @Transactional
+    public void updateUserRole(Long userId, Long roleId) {
+        
+        // Kiểm tra xem người dùng có tồn tại và chưa bị xóa
+        User user = userRepository.findByIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại", roleId));
+
+        //kiểm tra xem role có tồn tại không
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role không tồn tại", roleId));
+
+        // Cập nhật role cho người dùng
+        userRepository.updateUserRole(userId, roleId);
+        return;
+
+    }
+
 }

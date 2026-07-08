@@ -1,11 +1,7 @@
 package com.example.demo.security;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +11,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -35,18 +36,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
 
+            log.info("=== JWT FILTER === {}", request.getRequestURI());
+
             String token = getTokenFromRequest(request);
+
+            log.info("Token = {}", token);
 
             if (StringUtils.hasText(token)
                     && jwtTokenProvider.validateToken(token)) {
 
+                boolean valid = jwtTokenProvider.validateToken(token);
+
+                log.info("Valid = {}", valid);
+
                 String username = jwtTokenProvider.getUsername(token);
 
-                UserDetails userDetails =
-                        customUserDetailsService.loadUserByUsername(username);
+                UserDetails userDetails
+                        = customUserDetailsService.loadUserByUsername(username);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authentication
+                        = new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
                                 userDetails.getAuthorities()
@@ -62,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception ex) {
-
+            ex.printStackTrace();
             log.error("Cannot authenticate user", ex);
 
         }

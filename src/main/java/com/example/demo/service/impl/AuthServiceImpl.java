@@ -1,5 +1,9 @@
 package com.example.demo.service.impl;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.dto.request.LoginRequest;
 import com.example.demo.dto.response.LoginResponse;
 import com.example.demo.dto.response.UserResponse;
@@ -10,10 +14,9 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.interf.RefreshTokenService;
 import com.example.demo.util.PasswordUtil;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -41,19 +44,19 @@ public class AuthServiceImpl implements com.example.demo.service.interf.AuthServ
         User user = userRepository.findByUsernameAndIsDeletedFalse(request.getUsername())
                 .orElseThrow(() -> {
                     log.warn("User not found: {}", request.getUsername());
-                    return new RuntimeException("Invalid username or password");
+                    return new BadCredentialsException("Invalid username");
                 });
 
         //check if password matches
         if (!PasswordUtil.verifyPassword(request.getPassword(), user.getPasswordHash())) {
             log.warn("Invalid password for user: {}", request.getUsername());
-            throw new RuntimeException("Invalid username or password");
+            throw new BadCredentialsException("Invalid password");
         }
 
         //check if user is active
         if(!user.getIsActive()) {
             log.warn("User is not active: {}", request.getUsername());
-            throw new RuntimeException("User is not active");
+            throw new BadCredentialsException("User is not active");
         }
 
 

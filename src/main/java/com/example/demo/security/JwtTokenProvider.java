@@ -1,19 +1,23 @@
 package com.example.demo.security;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
+
 public class JwtTokenProvider {
 
     @Value("${app.jwt.secret}")
@@ -46,7 +50,7 @@ public class JwtTokenProvider {
     public Claims getClaims(String token){
 
             return Jwts.parser()
-                    .verifyWith(secretKey)
+                    .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();

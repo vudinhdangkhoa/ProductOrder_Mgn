@@ -6,18 +6,24 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.entity.Category;
 import com.example.demo.entity.Permission;
+import com.example.demo.entity.Product;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.RolePermission;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enums.UserRole;
+import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.PermissionRepository;
+import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.RolePermissionRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -35,6 +41,8 @@ public class DataSeeder implements CommandLineRunner {
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
@@ -48,7 +56,8 @@ public class DataSeeder implements CommandLineRunner {
             seedRoles();
             seedRolePermissions();
             seedAdminUser();
-            
+            seedCategories();
+            seedProducts();
             log.info("==========================================");
             log.info("  DATA SEEDING COMPLETED!");
             log.info("==========================================");
@@ -62,6 +71,33 @@ public class DataSeeder implements CommandLineRunner {
      */
     private boolean shouldSeed() {
         return userRepository.count() == 0; // Chỉ seed nếu chưa có user nào
+    }
+
+    /**
+     * Seed Categories 
+     */
+    private void seedCategories() {
+        log.info("Seeding categories...");
+        
+        // Kiểm tra nếu đã có dữ liệu thì không seed lại
+        if (categoryRepository.count() > 0) {
+            log.info("Categories already exist, skipping...");
+            return;
+        }
+        
+        List<Category> categories = Arrays.asList(
+            createCategory("C01", "Hệ thống phanh", "Chi tiết cơ khí cho hệ thống phanh ô tô"),
+            createCategory("C02", "Hệ thống lái", "Chi tiết cơ khí cho hệ thống lái và vô lăng"),
+            createCategory("C03", "Hệ thống truyền động", "Chi tiết cơ khí cho hộp số và trục truyền động"),
+            createCategory("C04", "Hệ thống khung gầm", "Chi tiết cơ khí cho khung xe và gầm ô tô"),
+            createCategory("C05", "Hệ thống động cơ", "Chi tiết cơ khí cho động cơ và các bộ phận liên quan"),
+            createCategory("C06", "Hệ thống treo", "Chi tiết cơ khí cho hệ thống giảm xóc và treo ô tô"),
+            createCategory("C07", "Hệ thống ống xả", "Chi tiết cơ khí cho ống xả và bộ giảm thanh"),
+            createCategory("C08", "Hệ thống làm mát", "Chi tiết cơ khí cho két nước và hệ thống làm mát")
+        );
+
+        categoryRepository.saveAll(categories);
+        log.info("✅ Created {} categories", categories.size());
     }
 
     /**
@@ -150,7 +186,8 @@ public class DataSeeder implements CommandLineRunner {
 
         // === PLANNER Permissions ===
         List<String> plannerPerms = Arrays.asList(
-            "USER_VIEW", "LINE_VIEW",
+            "USER_VIEW", "USER_MANAGE", "USER_ROLE_ASSIGN",
+            "LINE_VIEW","LINE_MANAGE",
             "CATEGORY_VIEW", "CATEGORY_MANAGE",
             "PRODUCT_VIEW", "PRODUCT_MANAGE",
             "ORDER_VIEW", "ORDER_CREATE", "ORDER_UPDATE", "ORDER_DELETE",
@@ -234,8 +271,138 @@ public class DataSeeder implements CommandLineRunner {
         log.info("   📧 operator2/operator2@company.com - Operator@123 (OPERATOR)");
     }
 
+    /* *
+         Seed Products 
+     */
+    private void seedProducts() {
+        log.info("Seeding products...");
+        
+        // Kiểm tra nếu đã có dữ liệu thì không seed lại
+        if (productRepository.count() > 0) {
+            log.info("Products already exist, skipping...");
+            return;
+        }
+        
+        // Lấy tất cả categories
+        List<Category> categories = categoryRepository.findAll();
+        if (categories.isEmpty()) {
+            log.warn("No categories found, skipping product seeding...");
+            return;
+        }
+        
+        // Tạo map để dễ dàng lấy category theo code
+        Map<String, Category> categoryMap = categories.stream()
+            .collect(Collectors.toMap(Category::getCategoryCode, Function.identity()));
+        
+        List<Product> products = Arrays.asList(
+            // Hệ thống phanh
+            createProduct("PR001", "Đĩa phanh trước", 
+                "Đĩa phanh trước bằng thép hợp kim, đường kính 280mm", 
+                true, categoryMap.get("C01")),
+            createProduct("PR002", "Đĩa phanh sau", 
+                "Đĩa phanh sau bằng gang cầu, đường kính 250mm", 
+                true, categoryMap.get("C01")),
+            createProduct("PR003", "Xi lanh phanh chính", 
+                "Xi lanh phanh chính bằng nhôm hợp kim, áp suất hoạt động 15Mpa", 
+                true, categoryMap.get("C01")),
+            
+            // Hệ thống lái
+            createProduct("PR004", "Trục lái chính", 
+                "Trục lái bằng thép carbon, chiều dài 450mm", 
+                true, categoryMap.get("C02")),
+            createProduct("PR005", "Càng lái", 
+                "Càng lái bằng thép hợp kim, độ bền cao", 
+                true, categoryMap.get("C02")),
+            createProduct("PR006", "Vô lăng", 
+                "Vô lăng thể thao bọc da, đường kính 350mm", 
+                true, categoryMap.get("C02")),
+            
+            // Hệ thống truyền động
+            createProduct("PR007", "Bánh răng số 1", 
+                "Bánh răng truyền động cấp 1, mô đun 2.5, 32 răng", 
+                true, categoryMap.get("C03")),
+            createProduct("PR008", "Bánh răng số 2", 
+                "Bánh răng truyền động cấp 2, mô đun 2.5, 28 răng", 
+                true, categoryMap.get("C03")),
+            createProduct("PR009", "Trục truyền động chính", 
+                "Trục truyền động chính bằng thép hợp kim, đường kính 45mm", 
+                true, categoryMap.get("C03")),
+            
+            // Hệ thống khung gầm
+            createProduct("PR010", "Dầm khung chính", 
+                "Dầm khung xe bằng thép cường độ cao, kích thước 2000x150mm", 
+                true, categoryMap.get("C04")),
+            createProduct("PR011", "Gia cường khung", 
+                "Thanh gia cường khung bằng thép ống, đường kính 50mm", 
+                true, categoryMap.get("C04")),
+            
+            // Hệ thống động cơ
+            createProduct("PR012", "Trục khuỷu động cơ", 
+                "Trục khuỷu động cơ bằng thép rèn, 8 bánh đối trọng", 
+                true, categoryMap.get("C05")),
+            createProduct("PR013", "Piston động cơ", 
+                "Piston động cơ bằng nhôm hợp kim, đường kính 86mm", 
+                true, categoryMap.get("C05")),
+            createProduct("PR014", "Thanh truyền", 
+                "Thanh truyền động cơ bằng thép hợp kim, chiều dài 150mm", 
+                true, categoryMap.get("C05")),
+            createProduct("PR015", "Trục cam", 
+                "Trục cam động cơ bằng thép hợp kim, 16 mấu cam", 
+                true, categoryMap.get("C05")),
+            
+            // Hệ thống treo
+            createProduct("PR016", "Lò xo giảm xóc", 
+                "Lò xo giảm xóc bằng thép lò xo, độ cứng 150 N/mm", 
+                true, categoryMap.get("C06")),
+            createProduct("PR017", "Thanh cân bằng", 
+                "Thanh cân bằng gầm xe bằng thép hợp kim, đường kính 22mm", 
+                true, categoryMap.get("C06")),
+            
+            // Hệ thống ống xả
+            createProduct("PR018", "Bộ giảm thanh chính", 
+                "Bộ giảm thanh chính bằng thép không gỉ, dung tích 6L", 
+                true, categoryMap.get("C07")),
+            createProduct("PR019", "Ống xả trung tâm", 
+                "Ống xả trung tâm bằng thép không gỉ, đường kính 60mm", 
+                true, categoryMap.get("C07")),
+            
+            // Hệ thống làm mát
+            createProduct("PR020", "Két nước làm mát", 
+                "Két nước bằng nhôm hợp kim, dung tích 5L", 
+                true, categoryMap.get("C08")),
+            createProduct("PR021", "Quạt làm mát", 
+                "Quạt làm mát động cơ, đường kính 400mm, 7 cánh", 
+                true, categoryMap.get("C08")),
+            
+            // Thêm vài sản phẩm khác
+            createProduct("PR022", "Má phanh trước", 
+                "Má phanh trước bằng vật liệu gốm, kích thước 120x45mm", 
+                true, categoryMap.get("C01")),
+            createProduct("PR023", "Dây curoa động cơ", 
+                "Dây curoa động cơ bằng cao su, chiều dài 1200mm", 
+                true, categoryMap.get("C05")),
+            createProduct("PR024", "Bạc đạn bánh xe", 
+                "Bạc đạn bánh xe bằng thép chịu lực, cỡ 40x80mm", 
+                true, categoryMap.get("C04")),
+            createProduct("PR025", "Dầu bôi trơn hộp số", 
+                "Dầu bôi trơn hộp số, dung tích 5L", 
+                true, categoryMap.get("C03"))
+        );
+
+        productRepository.saveAll(products);
+        log.info("✅ Created {} products", products.size());
+    }
+
     // ==================== HELPER METHODS ====================
     
+     private Category createCategory(String code, String name, String description) {
+        Category category = new Category();
+        category.setCategoryCode(code);
+        category.setName(name);
+        category.setDescription(description);
+        return category;
+    }
+
     private Permission createPermission(String name, String description) {
         Permission permission = new Permission();
         permission.setNamePermission(name);
@@ -255,5 +422,16 @@ public class DataSeeder implements CommandLineRunner {
         rp.setRole(role);
         rp.setPermission(permission);
         return rp;
+    }
+
+    private Product createProduct(String code, String name, String description, 
+                                   Boolean isActive, Category category) {
+        Product product = new Product();
+        product.setProductCode(code);
+        product.setName(name);
+        product.setDescription(description);
+        product.setIsActive(isActive);
+        product.setCategory(category);
+        return product;
     }
 }

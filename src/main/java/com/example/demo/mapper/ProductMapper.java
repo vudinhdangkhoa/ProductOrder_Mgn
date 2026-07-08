@@ -29,5 +29,10 @@ public interface ProductMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
+    
+    @Mapping(target = "productCode", ignore = true)
     void updateEntityFromRequest(UpdateProductRequest req, @MappingTarget Product product);
 }

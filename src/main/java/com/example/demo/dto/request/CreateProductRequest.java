@@ -7,16 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-@Data
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateProductRequest {
 
-    @NotBlank(message = "Mã sản phẩm không được để trống")
-    @Size(max = 20, message = "Mã sản phẩm tối đa 20 ký tự")
-    private String productCode;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
     @Size(max = 100, message = "Tên sản phẩm tối đa 100 ký tự")

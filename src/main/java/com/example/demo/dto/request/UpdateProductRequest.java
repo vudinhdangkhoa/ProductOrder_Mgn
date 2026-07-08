@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +24,6 @@ public class UpdateProductRequest {
     @Size(max = 255, message = "Mô tả tối đa 255 ký tự")
     private String description;
 
-
+    @NotBlank(message = "Trạng thái không được để trống")
+    private Boolean isActive;
 }
