@@ -1,17 +1,17 @@
 package com.example.demo.service.interf;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.example.demo.dto.request.CreateUserRequest;
 import com.example.demo.dto.request.UpdateUserRequest;
+import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.UserResponse;
 
 public interface UserService {
 
     UserResponse getUserById(Long id);
 
-    Page<UserResponse> getAllUsers(Pageable pageable);
+    PageResponse<UserResponse> getAllUsers(Pageable pageable);
 
     UserResponse createUser(CreateUserRequest request);
 

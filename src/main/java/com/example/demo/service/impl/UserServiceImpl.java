@@ -1,12 +1,12 @@
 package com.example.demo.service.impl;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.request.CreateUserRequest;
 import com.example.demo.dto.request.UpdateUserRequest;
+import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -39,13 +40,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponse> getAllUsers(Pageable pageable) {
+    public PageResponse<UserResponse> getAllUsers(Pageable pageable) {
 
-        return userRepository.findAllByIsDeletedFalse(pageable)
-                .map(userMapper::toResponse);
+        return PageResponse.fromPage(userRepository.findAllByIsDeletedFalse(pageable)
+                .map(userMapper::toResponse));
     }
 
     @Override
+    @Transactional
     public UserResponse createUser(CreateUserRequest request) {
         
         try{
@@ -90,6 +92,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse updateUser(Long id, UpdateUserRequest request) {
 
        try{
@@ -116,6 +119,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         
         userRepository.softDeleteById(id);

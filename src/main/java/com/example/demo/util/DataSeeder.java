@@ -148,7 +148,8 @@ public class DataSeeder implements CommandLineRunner {
         List<Role> roles = Arrays.asList(
             createRole(UserRole.MANAGER, "Ban quản lý - Chỉ xem"),
             createRole(UserRole.PLANNER, "Người lập kế hoạch - Toàn quyền sản phẩm & lệnh SX"),
-            createRole(UserRole.OPERATOR, "Công nhân vận hành - Cập nhật tiến độ")
+            createRole(UserRole.OPERATOR, "Công nhân vận hành - Cập nhật tiến độ"),
+            createRole(UserRole.ADMIN, "Quản trị hệ thống - Toàn quyền")
         );
 
         roleRepository.saveAll(roles);
@@ -168,7 +169,8 @@ public class DataSeeder implements CommandLineRunner {
                 .orElseThrow(() -> new RuntimeException("Planner role not found"));
         Role operatorRole = roleRepository.findByNameRole(UserRole.OPERATOR)
                 .orElseThrow(() -> new RuntimeException("Operator role not found"));
-
+        Role adminRole = roleRepository.findByNameRole(UserRole.ADMIN)
+                .orElseThrow(() -> new RuntimeException("Admin role not found"));
         // Lấy permissions từ DB
         Map<String, Permission> permMap = new HashMap<>();
         permissionRepository.findAll().forEach(p -> permMap.put(p.getNamePermission(), p));
@@ -186,7 +188,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // === PLANNER Permissions ===
         List<String> plannerPerms = Arrays.asList(
-            "USER_VIEW", "USER_MANAGE", "USER_ROLE_ASSIGN",
+            "USER_VIEW",
             "LINE_VIEW","LINE_MANAGE",
             "CATEGORY_VIEW", "CATEGORY_MANAGE",
             "PRODUCT_VIEW", "PRODUCT_MANAGE",
@@ -196,6 +198,19 @@ public class DataSeeder implements CommandLineRunner {
         );
         plannerPerms.forEach(perm -> {
             rolePermissions.add(createRolePermission(plannerRole, permMap.get(perm)));
+        });
+        // === ADMIN Permissions ===
+        List<String> adminPerms = Arrays.asList(
+            "USER_VIEW", "USER_MANAGE", "USER_ROLE_ASSIGN",
+            "LINE_VIEW","LINE_MANAGE",
+            "CATEGORY_VIEW", "CATEGORY_MANAGE",
+            "PRODUCT_VIEW", "PRODUCT_MANAGE",
+            "ORDER_VIEW", "ORDER_CREATE", "ORDER_UPDATE", "ORDER_DELETE",
+            "ORDER_RELEASE", "ORDER_CANCEL",
+            "DASHBOARD_VIEW"
+        );
+        adminPerms.forEach(perm -> {
+            rolePermissions.add(createRolePermission(adminRole, permMap.get(perm)));
         });
 
         // === OPERATOR Permissions ===
@@ -220,18 +235,29 @@ public class DataSeeder implements CommandLineRunner {
                 .orElseThrow(() -> new RuntimeException("Planner role not found"));
         Role managerRole = roleRepository.findByNameRole(UserRole.MANAGER)
                 .orElseThrow(() -> new RuntimeException("Manager role not found"));
-
+        Role adminRole = roleRepository.findByNameRole(UserRole.ADMIN)
+                .orElseThrow(() -> new RuntimeException("Admin role not found"));
         List<User> users = new ArrayList<>();
 
-        // Root Admin (Planner)
+        // Root Admin 
         User rootUser = new User();
         rootUser.setUsername("root");
         rootUser.setPasswordHash(PasswordUtil.hashPassword("Root@123"));
         rootUser.setFullName("Root Administrator");
         rootUser.setEmail("root@company.com");
-        rootUser.setRole(plannerRole);
+        rootUser.setRole(adminRole);
         rootUser.setIsActive(true);
         users.add(rootUser);
+
+        // Planer account
+        User planner = new User();
+        planner.setUsername("planner");
+        planner.setPasswordHash(PasswordUtil.hashPassword("Planner@123"));
+        planner.setFullName("Người lập kế hoạch");
+        planner.setEmail("planner@company.com");
+        planner.setRole(plannerRole);
+        planner.setIsActive(true);
+        users.add(planner);
 
         // Manager account
         User manager = new User();

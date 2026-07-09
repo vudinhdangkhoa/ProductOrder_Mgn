@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.request.CreateProductRequest;
 import com.example.demo.dto.request.UpdateProductRequest;
+import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.ProductResponse;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Product;
@@ -31,10 +32,10 @@ public class ProductionServiceImpl implements ProductionService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
-
+    
 
     @Override
-    public Page<ProductResponse> getAllProductions(Pageable pageable, Optional<String> name, Optional<Long> categoryId, Optional<Boolean> isActive, Optional<Boolean> isDeleted, Optional<String> product_code) {
+    public PageResponse<ProductResponse> getAllProductions(Pageable pageable, Optional<String> name, Optional<Long> categoryId, Optional<Boolean> isActive, Optional<Boolean> isDeleted, Optional<String> product_code) {
         
         Page<Product> products = productRepository.findAllWithFilters(
             pageable, 
@@ -44,8 +45,11 @@ public class ProductionServiceImpl implements ProductionService {
             isDeleted.orElse(null), 
             product_code.orElse(null));
 
-
-         return products.map(productMapper::toResponse);
+         // Convert Page<Product> sang Page<ProductResponse>
+        Page<ProductResponse> responsePage = products.map(productMapper::toResponse);
+        
+        // Convert sang PagedResponse
+        return PageResponse.fromPage(responsePage);
     }
 
     @Override

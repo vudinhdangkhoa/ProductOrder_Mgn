@@ -25,6 +25,8 @@ public interface CategoryMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "categoryCode", ignore = true) // Cấm update mã code
+    @Mapping(target = "categoryCode", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     void updateEntityFromRequest(UpdateCategoryRequest req, @MappingTarget Category category);
 }

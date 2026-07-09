@@ -73,7 +73,7 @@ public class ProductionOrderController {
         Page<ProductionOrderResponse> data = productionOrderService.searchOrders(
                 status, lineId, assignedUserId, startDate, endDate, keyword, pageable);
         
-        return ResponseEntity.ok(ApiResponse.success(PageResponse.of(data)));
+        return ResponseEntity.ok(ApiResponse.success(PageResponse.fromPage(data)));
     }
 
     @PatchMapping("/{id}")

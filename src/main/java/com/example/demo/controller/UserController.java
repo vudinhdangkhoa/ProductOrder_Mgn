@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.request.CreateUserRequest;
 import com.example.demo.dto.request.UpdateUserRequest;
 import com.example.demo.dto.response.ApiResponse;
+import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.service.interf.UserService;
 
@@ -38,11 +38,11 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER_VIEW')") // Chỉ cho phép người dùng có quyền USER_VIEW truy cập
-    public ResponseEntity<ApiResponse<Page<UserResponse>>> listUsers(
+    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> listUsers(
             @PageableDefault(size = 10) Pageable pageable) {
 
-        ApiResponse<Page<UserResponse>> response
-                = ApiResponse.<Page<UserResponse>>builder()
+        ApiResponse<PageResponse<UserResponse>> response
+                = ApiResponse.<PageResponse<UserResponse>>builder()
                         .success(true)
                         .message("Get all users successfully")
                         .data(userService.getAllUsers(pageable))
