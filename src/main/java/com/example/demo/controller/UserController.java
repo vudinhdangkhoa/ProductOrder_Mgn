@@ -1,9 +1,12 @@
 package com.example.demo.controller;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -85,8 +88,18 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<ApiResponse<UserResponse>> getProfile(@RequestParam Long userId) {
-        UserResponse userResponse = userService.getUserById(userId);
+    public ResponseEntity<ApiResponse<UserResponse>> getProfile(@RequestParam(required = false) Optional<Long> userId, @RequestParam(required = false) Optional<String> accessToken, Authentication authentication) {
+        
+       UserResponse userResponse;
+       if(userId.isPresent()){
+          userResponse = userService.getUserById(userId.get());
+       }else{
+
+       String username = authentication != null ? authentication.getName() : null;
+        userResponse = userService.getUserByName(username);
+       }
+        
+
         return ResponseEntity.ok(ApiResponse.<UserResponse>builder()
                 .success(true)
                 .message("User profile retrieved successfully")

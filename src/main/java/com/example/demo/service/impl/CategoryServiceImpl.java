@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createCategory(CreateCategoryRequest categoryResponse) {
         
         //kiểm tra xem category name đã tồn tại chưa
-        Category existingCategory = categoryRepository.findByCategoryNameAndIsDeletedFalse(categoryResponse.getName())
+        Category existingCategory = categoryRepository.findByNameAndIsDeletedFalse(categoryResponse.getName())
                 .orElse(null);
 
         if (existingCategory != null) {
@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse updateCategory(Long id, UpdateCategoryRequest categoryResponse) {
         
         //kiểm tra xem category name đã tồn tại chưa
-        Category existingCategory = categoryRepository.findByCategoryNameAndIsDeletedFalse(categoryResponse.getName())
+        Category existingCategory = categoryRepository.findByNameAndIsDeletedFalse(categoryResponse.getName())
                 .orElse(null);
 
         if (existingCategory != null && !existingCategory.getId().equals(id)) {

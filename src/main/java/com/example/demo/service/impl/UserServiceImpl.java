@@ -15,6 +15,7 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.interf.UserService;
 import com.example.demo.util.PasswordUtil;
 
@@ -30,12 +31,23 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
-
+    private final JwtTokenProvider jwtTokenProvider;
    
 
     @Override
+    public UserResponse getUserByName(String name) {
+        return userRepository.findByUsernameAndIsDeletedFalse(name)
+                .map(userMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại", 0));
+    }
+
+    @Override
     public UserResponse getUserById(Long id) {
-        return null;
+        
+        return userRepository.findByIdAndIsDeletedFalse(id)
+                .map(userMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại", id));
+
     }
 
     @Override

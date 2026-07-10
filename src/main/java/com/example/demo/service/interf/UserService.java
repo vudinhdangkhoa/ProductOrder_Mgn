@@ -20,4 +20,6 @@ public interface UserService {
     void deleteUser(Long id);
 
     void updateUserRole(Long userId, Long roleId);
+
+    UserResponse getUserByName(String name);
 }
