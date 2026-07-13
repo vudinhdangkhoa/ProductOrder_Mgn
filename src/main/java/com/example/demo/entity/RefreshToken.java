@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,8 +11,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "refresh_tokens")
@@ -24,6 +24,9 @@ public class RefreshToken extends BaseEntity {
 
     @Column(name = "token", nullable = false, unique = true, length = 255)
     private String token;
+
+    @Column(name = "token_sso", nullable = true, unique = true, length = 255)
+    private String tokenSSO;
 
     @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;

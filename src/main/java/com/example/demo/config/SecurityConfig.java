@@ -53,7 +53,8 @@ public class SecurityConfig {
                         "/swagger-resources/**",   // Swagger resources
                         "/webjars/**",             // Webjars cho Swagger
                         "/h2-console/**",          // H2 Console (nếu dùng)
-                        "/error"                   // Error page
+                        "/error",
+                        "/api/sso/**"                 // Error page
                 ).permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()

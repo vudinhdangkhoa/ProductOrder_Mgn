@@ -1,5 +1,8 @@
 package com.example.demo.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,9 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "users")
 @Getter
@@ -23,8 +23,7 @@ public class User extends BaseEntity {
     @Column(name = "username", nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
+    
 
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
@@ -38,6 +37,24 @@ public class User extends BaseEntity {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
+
+    @Column(name = "password", nullable = true, length = 255)
+    private String password = "1";
+
+    @Column(name = "Sub", length = 100, nullable = true)
+    private String sub;
+
+    @Column(name= "department", length = 100, nullable = true)
+    private String department;
+
+    @Column(name= "position", length = 100, nullable = true)
+    private String position;
+
+    @Column(name= "avatar", length = 255, nullable = true)
+    private String avatar;
+
+    @Column(name= "telegram", length = 100, nullable = true)
+    private String telegram;
 
     @OneToMany(mappedBy = "assignedUser", fetch = FetchType.LAZY)
     private List<ProductionOrder> assignedProductionOrders = new ArrayList<>();

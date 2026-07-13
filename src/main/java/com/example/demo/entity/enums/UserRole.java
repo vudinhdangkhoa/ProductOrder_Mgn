@@ -4,5 +4,6 @@ public enum UserRole {
     PLANNER,
     MANAGER,
     OPERATOR,
-    ADMIN
+    ADMIN,
+    DEFAULT
 }

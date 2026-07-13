@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     Optional<User> findByUsernameAndIsDeletedFalse(String username);
 
-    Optional<User> findByEmailAndPasswordHashAndIsDeletedFalse(String email, String passwordHash);
+    Optional<User> findByEmailAndPasswordAndIsDeletedFalse(String email, String passwordHash);
     
     boolean existsByEmail(String email);
     

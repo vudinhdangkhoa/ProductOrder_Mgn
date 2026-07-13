@@ -17,7 +17,6 @@ import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.interf.UserService;
-import com.example.demo.util.PasswordUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,9 +78,7 @@ public class UserServiceImpl implements UserService {
             //gán role cho user
             user.setRole(role);
 
-            //hash password
-            String hashedPassword = PasswordUtil.hashPassword(request.getPassword());
-            user.setPasswordHash(hashedPassword);
+           
 
             //lưu user vào DB
             return userMapper.toResponse(userRepository.save(user));

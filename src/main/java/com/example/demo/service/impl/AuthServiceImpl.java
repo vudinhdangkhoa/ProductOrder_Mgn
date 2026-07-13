@@ -13,7 +13,6 @@ import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.interf.RefreshTokenService;
-import com.example.demo.util.PasswordUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,11 +46,7 @@ public class AuthServiceImpl implements com.example.demo.service.interf.AuthServ
                     return new BadCredentialsException("Invalid username");
                 });
 
-        //check if password matches
-        if (!PasswordUtil.verifyPassword(request.getPassword(), user.getPasswordHash())) {
-            log.warn("Invalid password for user: {}", request.getUsername());
-            throw new BadCredentialsException("Invalid password");
-        }
+        
 
         //check if user is active
         if(!user.getIsActive()) {

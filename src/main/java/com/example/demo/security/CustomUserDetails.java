@@ -1,16 +1,18 @@
 package com.example.demo.security;
 
-import com.example.demo.entity.Permission;
-import com.example.demo.entity.RolePermission;
-import com.example.demo.entity.User;
-import lombok.Getter;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import com.example.demo.entity.Permission;
+import com.example.demo.entity.RolePermission;
+import com.example.demo.entity.User;
+
+import lombok.Getter;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
@@ -25,7 +27,7 @@ public class CustomUserDetails implements UserDetails {
 
         this.id = user.getId();
         this.username = user.getUsername();
-        this.password = user.getPasswordHash();
+        this.password = user.getPassword();
         this.active = user.getIsActive();
 
         Set<GrantedAuthority> auths = new HashSet<>();

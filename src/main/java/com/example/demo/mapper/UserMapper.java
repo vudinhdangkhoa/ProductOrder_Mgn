@@ -10,6 +10,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.example.demo.dto.request.CreateUserRequest;
 import com.example.demo.dto.request.UpdateUserRequest;
+import com.example.demo.dto.response.UserInfoSSOResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.User;
 
@@ -25,13 +26,21 @@ public interface UserMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "isDeleted", ignore = true)
-    @Mapping(target = "passwordHash", ignore = true) // Logic mã hóa password sẽ làm ở Service
+  
     @Mapping(target = "role", ignore = true) // Role sẽ được fetch từ DB ở Service
     User toEntity(CreateUserRequest request);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
+  
+    @Mapping(target = "role", ignore = true)
+    User toEntityFromSSO(UserInfoSSOResponse userResponse);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "passwordHash", ignore = true)
+   
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "isActive", ignore = true)

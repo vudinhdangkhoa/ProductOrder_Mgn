@@ -32,7 +32,12 @@ spring:
 app:
   jwt:
     secret: VJ8P3qP2rR6hTt6zQjV5aW9yQ0FQd3hJQ0V1Y0Z6b0J4Q3E=
-    expiration-ms: 86400000        # 24 giờ cho access token
+    expiration-ms: 900      # 15 phút cho access token
     refresh-expiration-ms: 604800000  # 7 ngày cho refresh token
   seed-data:
     enabled: true
+  sso:
+    server-url: https://10.1.3.197:3004
+    client-id: mini-project-khoa6673
+    client-secret: Adxisj2wyMjkZDLx
+    redirect-uri: http://localhost:3000/sso/callback

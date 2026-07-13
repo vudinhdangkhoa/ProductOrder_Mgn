@@ -149,7 +149,8 @@ public class DataSeeder implements CommandLineRunner {
             createRole(UserRole.MANAGER, "Ban quản lý - Chỉ xem"),
             createRole(UserRole.PLANNER, "Người lập kế hoạch - Toàn quyền sản phẩm & lệnh SX"),
             createRole(UserRole.OPERATOR, "Công nhân vận hành - Cập nhật tiến độ"),
-            createRole(UserRole.ADMIN, "Quản trị hệ thống - Toàn quyền")
+            createRole(UserRole.ADMIN, "Quản trị hệ thống - Toàn quyền"),
+            createRole(UserRole.DEFAULT, "Vai trò mặc định cho người dùng mới")
         );
 
         roleRepository.saveAll(roles);
@@ -237,56 +238,24 @@ public class DataSeeder implements CommandLineRunner {
                 .orElseThrow(() -> new RuntimeException("Manager role not found"));
         Role adminRole = roleRepository.findByNameRole(UserRole.ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin role not found"));
+        
         List<User> users = new ArrayList<>();
 
         // Root Admin 
         User rootUser = new User();
-        rootUser.setUsername("root");
-        rootUser.setPasswordHash(PasswordUtil.hashPassword("Root@123"));
-        rootUser.setFullName("Root Administrator");
+        rootUser.setUsername("6673");
+        
+        rootUser.setFullName("Vũ Đình Đăng Khoa");
         rootUser.setEmail("root@company.com");
         rootUser.setRole(adminRole);
         rootUser.setIsActive(true);
+        rootUser.setSub("6673");
+        rootUser.setDepartment("KT");
+        rootUser.setPosition("Kỹ sư IFS");
+    
         users.add(rootUser);
 
-        // Planer account
-        User planner = new User();
-        planner.setUsername("planner");
-        planner.setPasswordHash(PasswordUtil.hashPassword("Planner@123"));
-        planner.setFullName("Người lập kế hoạch");
-        planner.setEmail("planner@company.com");
-        planner.setRole(plannerRole);
-        planner.setIsActive(true);
-        users.add(planner);
-
-        // Manager account
-        User manager = new User();
-        manager.setUsername("manager");
-        manager.setPasswordHash(PasswordUtil.hashPassword("Manager@123"));
-        manager.setFullName("Quản lý sản xuất");
-        manager.setEmail("manager@company.com");
-        manager.setRole(managerRole);
-        manager.setIsActive(true);
-        users.add(manager);
-
-        // Operator accounts
-        User operator1 = new User();
-        operator1.setUsername("operator1");
-        operator1.setPasswordHash(PasswordUtil.hashPassword("Operator@123"));
-        operator1.setFullName("Công nhân 1");
-        operator1.setEmail("operator1@company.com");
-        operator1.setRole(roleRepository.findByNameRole(UserRole.OPERATOR).orElse(null));
-        operator1.setIsActive(true);
-        users.add(operator1);
-
-        User operator2 = new User();
-        operator2.setUsername("operator2");
-        operator2.setPasswordHash(PasswordUtil.hashPassword("Operator@123"));
-        operator2.setFullName("Công nhân 2");
-        operator2.setEmail("operator2@company.com");
-        operator2.setRole(roleRepository.findByNameRole(UserRole.OPERATOR).orElse(null));
-        operator2.setIsActive(true);
-        users.add(operator2);
+        
 
         userRepository.saveAll(users);
         
