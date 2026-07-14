@@ -32,7 +32,7 @@ spring:
 app:
   jwt:
     secret: VJ8P3qP2rR6hTt6zQjV5aW9yQ0FQd3hJQ0V1Y0Z6b0J4Q3E=
-    expiration-ms: 900      # 15 phút cho access token
+    expiration-ms:  900000       # 15 phút cho access token
     refresh-expiration-ms: 604800000  # 7 ngày cho refresh token
   seed-data:
     enabled: true

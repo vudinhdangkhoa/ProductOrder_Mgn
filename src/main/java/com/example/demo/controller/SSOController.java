@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/sso")
 @RequiredArgsConstructor
+
 @Slf4j
 @Tag(name = "SSO", description = "Single Sign-On API")
 public class SSOController {

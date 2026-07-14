@@ -47,14 +47,15 @@ public class SecurityConfig {
               
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**",           // Login, register, refresh token
+                .requestMatchers("/api/auth/**",
+                        "/api/sso/**",           // Login, register, refresh token
                         "/swagger-ui/**",          // Swagger UI
                         "/v3/api-docs/**",         // OpenAPI docs
                         "/swagger-resources/**",   // Swagger resources
                         "/webjars/**",             // Webjars cho Swagger
                         "/h2-console/**",          // H2 Console (nếu dùng)
-                        "/error",
-                        "/api/sso/**"                 // Error page
+                        "/error"
+                                  // Error page
                 ).permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
