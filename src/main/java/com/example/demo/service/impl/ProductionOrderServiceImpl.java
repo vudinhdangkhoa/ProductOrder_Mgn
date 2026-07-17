@@ -203,7 +203,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("ProductionOrder", id));
 
         if (order.getStatus() != ProductionOrderStatus.DRAFT) {
-            throw new BusinessException("INVALID_STATUS", "Only orders in DRAFT status can be released");
+            throw new BusinessException("INVALID_STATUS", "Only orders in CREATED status can be released");
         }
 
         order.setStatus(ProductionOrderStatus.RELEASED);
