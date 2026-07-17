@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,6 @@ import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.ProductResponse;
 import com.example.demo.service.interf.ProductionService;
-
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +47,10 @@ public class ProductionController {
         Pageable pageable, 
         @RequestParam(required = false) Optional<String> name,
             @RequestParam(required = false) Optional<Long> categoryId,
-            
-            @RequestParam(required = false) Optional<Boolean> isActive,
             @RequestParam(required = false) Optional<Boolean> isDeleted,
             @RequestParam(required = false) Optional<String> product_code) {
 
-        PageResponse<ProductResponse> products = productionService.getAllProductions(pageable, name, categoryId, isActive, isDeleted, product_code);
+        PageResponse<ProductResponse> products = productionService.getAllProductions(pageable, name, categoryId,  isDeleted, product_code);
         
         String message = products.isEmpty() 
             ? "Không có sản phẩm nào" 

@@ -27,9 +27,6 @@ public class Line extends BaseEntity {
     @Column(name = "description", length = 255)
     private String description;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
     private List<ProductionOrder> productionOrders = new ArrayList<>();
 }

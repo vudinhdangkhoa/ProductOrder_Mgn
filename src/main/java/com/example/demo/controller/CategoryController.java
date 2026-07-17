@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +18,7 @@ import com.example.demo.dto.request.CreateCategoryRequest;
 import com.example.demo.dto.request.UpdateCategoryRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.CategoryResponse;
+import com.example.demo.dto.response.PageResponse;
 import com.example.demo.service.interf.CategoryService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,13 +38,13 @@ public class CategoryController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('CATEGORY_VIEW')")
-    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories() {
+    public ResponseEntity<ApiResponse<PageResponse<CategoryResponse>>> getAllCategories( Pageable pageable) {
     log.info("REST request to get all categories");
 
-    List<CategoryResponse> categories = categoryService.getAllCategories();
+    PageResponse<CategoryResponse> categories = categoryService.getAllCategories(pageable);
 
     return ResponseEntity.ok(
-        ApiResponse.<List<CategoryResponse>>builder()
+        ApiResponse.<PageResponse<CategoryResponse>>builder()
             .success(true)
             .data(categories)
             .message(categories.isEmpty() ? "Không có danh mục nào" : "Lấy danh sách danh mục thành công")
@@ -55,7 +56,7 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
         @Valid @RequestBody CreateCategoryRequest request) {
-    log.info("REST request to create category: {}", request.getCategoryCode());
+    
 
     CategoryResponse response = categoryService.createCategory(request);
 

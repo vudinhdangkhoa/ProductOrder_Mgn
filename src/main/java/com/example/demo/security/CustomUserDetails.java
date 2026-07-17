@@ -28,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
-        this.active = user.getIsActive();
+        this.active = !user.getIsDeleted();
 
         Set<GrantedAuthority> auths = new HashSet<>();
 

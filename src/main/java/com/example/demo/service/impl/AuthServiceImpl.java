@@ -49,7 +49,7 @@ public class AuthServiceImpl implements com.example.demo.service.interf.AuthServ
         
 
         //check if user is active
-        if(!user.getIsActive()) {
+        if(user.getIsDeleted()) {
             log.warn("User is not active: {}", request.getUsername());
             throw new BadCredentialsException("User is not active");
         }

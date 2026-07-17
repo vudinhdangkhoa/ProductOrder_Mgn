@@ -17,7 +17,7 @@ import com.example.demo.entity.Category;
 
 @Repository
 @EnableJpaRepositories
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+@Transactional(readOnly = true)public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findByIdAndIsDeletedFalse(Long id);
 

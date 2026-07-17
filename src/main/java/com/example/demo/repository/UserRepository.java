@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.entity.User;
 
 @Repository
+@Transactional(readOnly = true)
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // Derived Query Methods

@@ -40,14 +40,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            "WHERE (COALESCE(:name, '') = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
            "AND (:category_id IS NULL OR p.category.id = :category_id) " +
            "AND (COALESCE(:product_code, '') = '' OR LOWER(p.productCode) LIKE LOWER(CONCAT('%', :product_code, '%'))) " +
-           "AND (:is_active IS NULL OR p.isActive = :is_active) " +
            "AND (:is_deleted IS NULL OR p.isDeleted = :is_deleted)")
     Page<Product> findAllWithFilters(
             Pageable pageable,
             @Param("name") String name,
             @Param("category_id") Long categoryId,
-            @Param("is_active") Boolean isActive,
-            @Param("is_deleted") Boolean isDeleted,
+            @Param("is_deleted") Boolean is_deleted,
             @Param("product_code") String productCode
     );
 

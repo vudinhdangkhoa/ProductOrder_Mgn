@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -117,7 +118,7 @@ public class SsoServiceImpl implements SsoService {
                     existingUser.setRole(defaultRole);
                     UserRepository.save(existingUser);
                 }
-
+                userInfo.setRoleName(Optional.of(existingUser.getRole().getNameRole().toString()));
                 //tạo response token
                
                 RefreshToken refreshTokenLocal = refreshTokenService.createRefreshToken(existingUser.getId());

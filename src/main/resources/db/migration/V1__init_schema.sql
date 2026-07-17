@@ -28,7 +28,7 @@ CREATE TABLE users (
     position VARCHAR(100),
     telegram VARCHAR(100),
     role_id BIGINT,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -61,7 +61,7 @@ CREATE TABLE production_lines (
     line_code VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(255),
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE
@@ -72,7 +72,7 @@ CREATE TABLE products (
     product_code VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(255),
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+   
     category_id BIGINT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -93,22 +93,23 @@ CREATE TABLE production_orders (
     status VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+     reason VARCHAR(255),
     CONSTRAINT fk_production_orders_product FOREIGN KEY (product_id) REFERENCES products(id),
     CONSTRAINT fk_production_orders_line FOREIGN KEY (line_id) REFERENCES production_lines(id),
     CONSTRAINT fk_production_orders_assigned_user FOREIGN KEY (assigned_user_id) REFERENCES users(id)
 );
 
-CREATE TABLE status_production_orders (
+CREATE TABLE audit_log_status_production_orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    production_id BIGINT NOT NULL,
+    production_order_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    action VARCHAR(20) NOT NULL DEFAULT 'create',
+    action VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
     date_update DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    CONSTRAINT fk_status_production_order_production FOREIGN KEY (production_id) REFERENCES production_orders(id),
+   
+    CONSTRAINT fk_status_production_order_production FOREIGN KEY (production_order_id) REFERENCES production_orders(id),
     CONSTRAINT fk_status_production_order_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

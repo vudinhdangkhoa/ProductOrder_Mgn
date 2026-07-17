@@ -154,4 +154,12 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    @Transactional
+    public UserResponse getUserByUsernameAndIsDeletedFalse(String username) {
+        return userRepository.findByUsernameAndIsDeletedFalse(username)
+                .map(userMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại", 0));
+    }
+
 }

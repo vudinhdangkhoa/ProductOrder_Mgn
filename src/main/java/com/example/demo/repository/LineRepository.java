@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Line;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +11,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import com.example.demo.entity.Line;
 
 @Repository
+@Transactional(readOnly = true)
 public interface LineRepository extends JpaRepository<Line, Long> {
 
     Optional<Line> findByIdAndIsDeletedFalse(Long id);
@@ -21,10 +23,11 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     boolean existsByLineCode(String lineCode);
 
-    Page<Line> findAllByIsDeletedFalse(Pageable pageable);
 
-    // Lấy danh sách các dây chuyền đang hoạt động (Phục vụ dropdown tạo Lệnh sản xuất)
-    Page<Line> findAllByIsActiveTrueAndIsDeletedFalse(Pageable pageable);
+    @Transactional
+    @Query("SELECT l FROM Line l WHERE l.isDeleted = false AND (:lineCode IS NULL OR l.lineCode LIKE %:lineCode%) AND (:name IS NULL OR l.name LIKE %:name%)")
+    Page<Line> findAllByIsDeletedFalse(Pageable pageable, Optional<String> lineCode, Optional<String> name);
+
 
     @Modifying
     @Transactional

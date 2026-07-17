@@ -2,10 +2,8 @@ package com.example.demo.dto.request;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,9 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateProductionOrderRequest {
 
-    @NotBlank(message = "Mã lệnh không được để trống")
-    @Size(max = 20, message = "Mã lệnh tối đa 20 ký tự")
-    private String orderCode;
+    
 
     @NotNull(message = "Sản phẩm là bắt buộc")
     private Long productId;
@@ -37,4 +33,7 @@ public class CreateProductionOrderRequest {
 
     @NotNull(message = "Ngày kết thúc là bắt buộc")
     private LocalDate endDate;
+
+    @NotNull(message = "Người thực hiện là bắt buộc")
+    private Long assignedUserId;
 }

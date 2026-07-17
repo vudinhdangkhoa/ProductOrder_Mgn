@@ -12,7 +12,7 @@ import com.example.demo.dto.response.ProductResponse;
 
 public interface ProductionService {
 
-    PageResponse<ProductResponse> getAllProductions(Pageable pageable, Optional<String> name, Optional<Long> categoryId, Optional<Boolean> isActive, Optional<Boolean> isDeleted, Optional<String> product_code);
+    PageResponse<ProductResponse> getAllProductions(Pageable pageable, Optional<String> name, Optional<Long> categoryId, Optional<Boolean> isDeleted, Optional<String> product_code);
 
     ProductResponse getProductionById(Long id);
 

@@ -3,12 +3,14 @@ package com.example.demo.service.impl;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.request.CreateCategoryRequest;
 import com.example.demo.dto.request.UpdateCategoryRequest;
 import com.example.demo.dto.response.CategoryResponse;
+import com.example.demo.dto.response.PageResponse;
 import com.example.demo.entity.Category;
 import com.example.demo.exception.DuplicateResourceException;
 import com.example.demo.exception.ResourceNotFoundException;
@@ -30,12 +32,14 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public List<CategoryResponse> getAllCategories() {
+    public PageResponse<CategoryResponse> getAllCategories(Pageable pageable) {
         
 
         List<Category> categories = categoryRepository.findAllByIsDeletedFalse();
                
-        return categories.stream().map(categoryMapper::toResponse).toList();
+        return PageResponse.<CategoryResponse>builder()
+                .content(categories.stream().map(categoryMapper::toResponse).toList())
+                .build();
     }
 
     @Override

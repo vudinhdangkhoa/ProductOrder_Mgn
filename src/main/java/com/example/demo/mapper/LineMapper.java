@@ -20,11 +20,15 @@ public interface LineMapper {
     @Mapping(target = "updatedAt", ignore = true)
    
     @Mapping(target = "isDeleted", ignore = true)
-    @Mapping(target = "isActive", ignore = true) // Field này mặc định là true từ Entity
+    
     Line toEntity(CreateLineRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "lineCode", ignore = true) // Cấm ghi đè mã dây chuyền khi update
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "isDeleted", ignore = true)
+    @Mapping(target = "productionOrders", ignore = true)
     void updateEntityFromRequest(UpdateLineRequest req, @MappingTarget Line line);
 }

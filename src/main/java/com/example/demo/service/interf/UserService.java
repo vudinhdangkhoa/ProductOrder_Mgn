@@ -22,4 +22,6 @@ public interface UserService {
     void updateUserRole(Long userId, Long roleId);
 
     UserResponse getUserByName(String name);
+
+    UserResponse getUserByUsernameAndIsDeletedFalse(String username);
 }

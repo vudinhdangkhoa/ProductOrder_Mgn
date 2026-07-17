@@ -1,5 +1,7 @@
 package com.example.demo.dto.response;
 
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +23,5 @@ private String sub;
         private String position;
         private String avatar;
         private String telegram;
+        private Optional<String> roleName;
 }

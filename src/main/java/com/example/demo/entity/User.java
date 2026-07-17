@@ -35,9 +35,6 @@ public class User extends BaseEntity {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-
     @Column(name = "password", nullable = true, length = 255)
     private String password = "1";
 
@@ -60,7 +57,7 @@ public class User extends BaseEntity {
     private List<ProductionOrder> assignedProductionOrders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<StatusProductionOrder> statusUpdates = new ArrayList<>();
+    private List<AuditLogStatusProductionOrder> statusUpdates = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<RefreshToken> refreshTokens = new ArrayList<>();

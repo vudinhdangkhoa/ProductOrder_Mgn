@@ -1,10 +1,11 @@
 package com.example.demo.dto.response;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -15,6 +16,6 @@ public class LineResponse {
     private String lineCode;
     private String name;
     private String description;
-    private Boolean isActive;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 }

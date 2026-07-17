@@ -35,13 +35,13 @@ public class ProductionServiceImpl implements ProductionService {
     
 
     @Override
-    public PageResponse<ProductResponse> getAllProductions(Pageable pageable, Optional<String> name, Optional<Long> categoryId, Optional<Boolean> isActive, Optional<Boolean> isDeleted, Optional<String> product_code) {
+    public PageResponse<ProductResponse> getAllProductions(Pageable pageable, Optional<String> name, Optional<Long> categoryId, Optional<Boolean> isDeleted, Optional<String> product_code) {
         
         Page<Product> products = productRepository.findAllWithFilters(
             pageable, 
             name.orElse(null), 
             categoryId.orElse(null), 
-            isActive.orElse(null), 
+          
             isDeleted.orElse(null), 
             product_code.orElse(null));
 

@@ -49,13 +49,13 @@ public class ProductionOrder extends BaseEntity {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @Column(name = "is_delete", nullable = false)
-    private Boolean isDelete = false;
+    @Column(name = "reason", length = 255)
+    private String reason;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20,columnDefinition = "VARCHAR(50)")
     private ProductionOrderStatus status = ProductionOrderStatus.DRAFT;
 
     @OneToMany(mappedBy = "productionOrder", fetch = FetchType.LAZY)
-    private List<StatusProductionOrder> statusHistory = new ArrayList<>();
+    private List<AuditLogStatusProductionOrder> statusHistory = new ArrayList<>();
 }

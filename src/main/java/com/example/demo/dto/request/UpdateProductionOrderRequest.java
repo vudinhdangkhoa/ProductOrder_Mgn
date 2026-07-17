@@ -2,11 +2,12 @@ package com.example.demo.dto.request;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.Positive;
+import com.example.demo.entity.enums.ProductionOrderStatus;
+
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,15 +19,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UpdateProductionOrderRequest {
 
-    @Positive(message = "Số lượng phải lớn hơn 0")
-    private Integer quantity;
+    @NotBlank(message = "số lượng không được để trống")
+    
+    private Long quantity;
 
-    private Long lineId;
-
+    @NotBlank(message = "ngày bắt đầu không được để trống")
     private LocalDate startDate;
 
+    @NotBlank(message = "ngày kết thúc không được để trống")
     private LocalDate endDate;
 
     @Size(max = 20, message = "Trạng thái tối đa 20 ký tự")
-    private String status;
+    private ProductionOrderStatus status;
 }

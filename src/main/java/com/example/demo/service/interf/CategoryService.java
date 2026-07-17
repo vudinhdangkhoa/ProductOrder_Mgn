@@ -1,16 +1,17 @@
 package com.example.demo.service.interf;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 import com.example.demo.dto.request.CreateCategoryRequest;
 import com.example.demo.dto.request.UpdateCategoryRequest;
 import com.example.demo.dto.response.CategoryResponse;
+import com.example.demo.dto.response.PageResponse;
 
 
 
 public interface CategoryService {
     
-    List<CategoryResponse> getAllCategories();
+    PageResponse<CategoryResponse> getAllCategories(Pageable pageable);
 
     CategoryResponse createCategory(CreateCategoryRequest categoryResponse);
 

@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.TokenSSOInfoResponse;
 import com.example.demo.dto.response.TokenSSOResponse;
+import com.example.demo.dto.response.UserResponse;
+import com.example.demo.entity.User;
 import com.example.demo.service.interf.SsoService;
+import com.example.demo.service.interf.UserService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SSOController {
 
     private final SsoService ssoService;
+    private final UserService userService;
 
     // 1. Lấy URL đăng nhập (FE gọi để lấy redirect URL)
     @GetMapping("/login-url")
@@ -59,6 +63,10 @@ public class SSOController {
             response.put("expiresIn", tokenResponse.getExpiresIn());
             response.put("userInfo",tokenResponse.getUserInfo());
             response.put("refreshTokenLocal",tokenResponse.getRefreshTokenLocal());
+
+            //check user lock
+            UserResponse checkUserLock = userService.getUserByUsernameAndIsDeletedFalse(tokenResponse.getUserInfo().getUserName());
+           
             return ResponseEntity.ok(ApiResponse.<TokenSSOResponse>builder()
                     .success(true)
                     .message("Token obtained successfully")

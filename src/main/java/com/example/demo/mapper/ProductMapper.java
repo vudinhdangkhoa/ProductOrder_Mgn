@@ -31,7 +31,7 @@ public interface ProductMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target= "isActive", ignore = true)
+  
     @Mapping(target = "isDeleted", ignore = true)
     
     @Mapping(target = "productCode", ignore = true)

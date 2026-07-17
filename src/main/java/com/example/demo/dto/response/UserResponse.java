@@ -13,13 +13,15 @@ import lombok.NoArgsConstructor;
 public class UserResponse {
 
     private Long id;
-    private String username;
+    private String userName;
     private String fullName;
     private String email;
     private String roleName; 
     private Boolean isActive;
     private LocalDateTime createdAt;
-    
+    private String department;
+    private String position;
+    private String sub;
    
     // KHONG BAO GIO tra ve: password, token, internal fields
 }
