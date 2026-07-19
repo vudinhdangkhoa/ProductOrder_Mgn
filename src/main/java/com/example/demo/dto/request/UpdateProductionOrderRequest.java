@@ -2,10 +2,7 @@ package com.example.demo.dto.request;
 
 import java.time.LocalDate;
 
-import com.example.demo.entity.enums.ProductionOrderStatus;
-
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +26,5 @@ public class UpdateProductionOrderRequest {
     @NotBlank(message = "ngày kết thúc không được để trống")
     private LocalDate endDate;
 
-    @Size(max = 20, message = "Trạng thái tối đa 20 ký tự")
-    private ProductionOrderStatus status;
+   
 }

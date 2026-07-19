@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryResponse {
     private Long id;
-    private String productCode;
+    private String categoryCode;
     private String name;
     private String description;
     private Boolean isDeleted;

@@ -89,7 +89,7 @@ CREATE TABLE production_orders (
     assigned_user_id BIGINT,
     start_date DATE,
     end_date DATE,
-    is_delete BOOLEAN NOT NULL DEFAULT FALSE,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     status VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,

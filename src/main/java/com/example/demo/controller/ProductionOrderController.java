@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.request.CreateProductionOrderRequest;
 import com.example.demo.dto.request.UpdateProductionOrderRequest;
-import com.example.demo.dto.request.UpdateProductionOrderStatus;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.AuditLogPOResponse;
 import com.example.demo.dto.response.PageResponse;
@@ -173,6 +172,7 @@ public class ProductionOrderController {
     }
 
     @PutMapping("/{id}/cancel")
+    @PreAuthorize("hasAuthority('ORDER_CANCEL')") // Chỉ cho phép người dùng có quyền ORDER_CANCEL truy cập
     public ResponseEntity<ApiResponse<Void>> cancelOrder(@PathVariable Long id, @RequestParam String reason, @RequestParam Long userId) {
         //TODO: process PUT request
         
@@ -181,6 +181,18 @@ public class ProductionOrderController {
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
                 .message("Hủy lệnh sản xuất thành công")
+                .timestamp(java.time.LocalDateTime.now())
+                .build());
+    }
+
+    @PutMapping("/{id}/release")
+    @PreAuthorize("hasAuthority('ORDER_RELEASE')") // Chỉ cho phép người dùng
+    public ResponseEntity<ApiResponse<Void>> releaseOrder(@PathVariable Long id, @RequestParam Long userId) {
+        productionOrderService.releaseOrder(id, userId);
+
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .message("Phát hành lệnh sản xuất thành công")
                 .timestamp(java.time.LocalDateTime.now())
                 .build());
     }

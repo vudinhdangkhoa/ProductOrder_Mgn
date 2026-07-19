@@ -17,6 +17,7 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.CategoryMapper;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.service.interf.CategoryService;
+import com.example.demo.util.GenerateCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     Category category = Objects.requireNonNull(categoryMapper.toEntity(categoryResponse));
+    category.setCategoryCode(GenerateCode.generateCategoryCode());
     category = categoryRepository.save(category);
         return categoryMapper.toResponse(category);
     }

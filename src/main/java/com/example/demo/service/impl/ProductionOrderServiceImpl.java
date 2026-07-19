@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.request.CreateProductionOrderRequest;
 import com.example.demo.dto.request.UpdateProductionOrderRequest;
-import com.example.demo.dto.request.UpdateProductionOrderStatus;
 import com.example.demo.dto.response.AuditLogPOResponse;
 import com.example.demo.dto.response.ProductionOrderResponse;
 import com.example.demo.entity.Line;
@@ -73,7 +72,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         }
 
         ProductionOrder order = orderMapper.toEntity(request);
-        
+
         // Fetch and set related entities
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product", request.getProductId()));
@@ -88,7 +87,6 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
 
         String orderCode = GenerateCode.generateProductOrderCode();
         order.setOrderCode(orderCode);
-
 
         ProductionOrder saved = orderRepository.save(order);
         // Create audit log entry for the new order
@@ -146,14 +144,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         ProductionOrder updated = orderRepository.save(order);
 
         // update audit log
-        AuditLogPOResponse auditLogResponse = AuditLogPOResponse.builder()
-                .productOrderId(updated.getId())
-                .action(request.getStatus())
-                .userId(userId)
-                .createdAt(java.time.LocalDateTime.now())
-                .build();
-
-        auditLogPOService.saveAuditLog(auditLogResponse);
+        
 
         // eventPublisher.publishEvent(new ProductionOrderEvent(updated, "UPDATED"));
 
@@ -165,9 +156,13 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
     @Transactional
     public void deleteOrder(Long id, Long userId) {
         log.info("Soft deleting production order id: {}", id);
-        if (!orderRepository.existsById(id)) {
-            throw new ResourceNotFoundException("ProductionOrder", id);
+         ProductionOrder order = orderRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ProductionOrder", id));
+
+        if (order.getStatus() != ProductionOrderStatus.DRAFT) {
+            throw new BusinessException("INVALID_STATUS", "Only orders in DRAFT status can be deleted");
         }
+
         orderRepository.softDeleteById(id);
 
         // update audit log
@@ -240,7 +235,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         order.setStatus(request);
         ProductionOrder updated = orderRepository.save(order);
 
-       // update audit log
+        // update audit log
         AuditLogPOResponse auditLogResponse = AuditLogPOResponse.builder()
                 .productOrderId(updated.getId())
                 .action(request)
@@ -261,8 +256,11 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("ProductionOrder", id));
 
         if (order.getStatus() == ProductionOrderStatus.COMPLETED
-                || order.getStatus() == ProductionOrderStatus.CANCELLED) {
-            throw new BusinessException("INVALID_STATUS", "Cannot cancel completed or already cancelled orders");
+                || order.getStatus() == ProductionOrderStatus.CANCELLED
+                || order.getStatus() == ProductionOrderStatus.DELETED
+                || order.getStatus() == ProductionOrderStatus.RELEASED
+                || order.getStatus() == ProductionOrderStatus.DRAFT) {
+            throw new BusinessException("Cannot cancel completed or already cancelled orders", "cannot_cancel_completed_or_cancelled");
         }
 
         order.setStatus(ProductionOrderStatus.CANCELLED);
@@ -307,17 +305,17 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
             }
 
             if (matchedGroups.isEmpty()) {
-                //  Không trùng với bất kỳ nhóm nào trước đó -> tạo một nhóm mới
-               
+                // Không trùng với bất kỳ nhóm nào trước đó -> tạo một nhóm mới
+
                 List<ProductionOrderResponse> newGroup = new ArrayList<>();
                 newGroup.add(order);
                 groups.add(newGroup);
             } else if (matchedGroups.size() == 1) {
-                //  Trùng với đúng 1 nhóm -> thêm vào nhóm đó
+                // Trùng với đúng 1 nhóm -> thêm vào nhóm đó
                 matchedGroups.get(0).add(order);
             } else {
                 // Trùng với nhiều nhóm (lệnh này là cầu nối 2 nhóm đã tách biệt trước đó lại)
-                //gộp tất cả các nhóm trùng này lại làm một nhóm lớn duy nhất
+                // gộp tất cả các nhóm trùng này lại làm một nhóm lớn duy nhất
                 List<ProductionOrderResponse> mergedGroup = matchedGroups.get(0);
                 mergedGroup.add(order);
                 for (int k = 1; k < matchedGroups.size(); k++) {
@@ -346,6 +344,5 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         return o1.getStartDate().isBefore(o2.getEndDate()) &&
                 o1.getEndDate().isAfter(o2.getStartDate());
     }
-
 
 }
