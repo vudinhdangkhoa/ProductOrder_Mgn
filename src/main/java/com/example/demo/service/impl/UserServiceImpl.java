@@ -1,5 +1,7 @@
 package com.example.demo.service.impl;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -160,6 +162,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsernameAndIsDeletedFalse(username)
                 .map(userMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại", 0));
+    }
+
+    @Override
+    public List<UserResponse> getAllUsersWithoutPagination() {
+        return userMapper.toResponseList(userRepository.findAllByIsDeletedFalse());
     }
 
 }

@@ -1,8 +1,8 @@
 package com.example.demo.service.impl;
 
-import java.util.List;
 import java.util.Objects;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +36,9 @@ public class CategoryServiceImpl implements CategoryService {
     public PageResponse<CategoryResponse> getAllCategories(Pageable pageable) {
         
 
-        List<Category> categories = categoryRepository.findAllByIsDeletedFalse();
-               
-        return PageResponse.<CategoryResponse>builder()
-                .content(categories.stream().map(categoryMapper::toResponse).toList())
-                .build();
+        Page<Category> categories = categoryRepository.findAllByIsDeletedFalse(pageable);
+        Page<CategoryResponse> responsePage = categories.map(categoryMapper::toResponse);      
+        return PageResponse.fromPage(responsePage);
     }
 
     @Override

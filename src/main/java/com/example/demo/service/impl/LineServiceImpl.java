@@ -7,8 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.request.CreateLineRequest;
 import com.example.demo.dto.request.UpdateLineRequest;
 import com.example.demo.dto.response.LineResponse;
+import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.ProductionOrderResponse;
 import com.example.demo.entity.Line;
 import com.example.demo.mapper.LineMapper;
@@ -17,8 +19,6 @@ import com.example.demo.service.interf.LineService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.example.demo.dto.request.CreateLineRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -72,19 +72,18 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    public Page<LineResponse> getAllLines(Pageable pageable, Optional<String> lineCode, Optional<String> name) {
+    public PageResponse<LineResponse> getAllLines(Pageable pageable, Optional<String> lineCode, Optional<String> name) {
         // Implement the logic to retrieve all lines with pagination and optional filtering by lineCode and name
 
         Page<Line> lines = lineRepository.findAllByIsDeletedFalse(pageable, lineCode, name);
 
-        return lines.map(line -> LineResponse.builder()
-                .id(line.getId())
-                .lineCode(line.getLineCode())
-                .name(line.getName())
-                .description(line.getDescription())
-                .isDeleted(line.getIsDeleted())
-                .createdAt(line.getCreatedAt())
-                .build());
+        return PageResponse.fromPage(lines.map(lineMapper::toResponse));
+    }
+
+    @Override
+    public List<LineResponse> getAllLinesWithoutPagination() {
+        List<Line> lines = lineRepository.findAllByIsDeletedFalse();
+        return lineMapper.toResponseList(lines);
     }
 
 }

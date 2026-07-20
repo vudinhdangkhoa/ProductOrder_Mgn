@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 public class UserResponse {
 
     private Long id;
-    private String userName;
+    private String username;
     private String fullName;
     private String email;
     private String roleName; 
-    private Boolean isActive;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
     private String department;
     private String position;

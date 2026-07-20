@@ -15,7 +15,6 @@ import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.TokenSSOInfoResponse;
 import com.example.demo.dto.response.TokenSSOResponse;
 import com.example.demo.dto.response.UserResponse;
-import com.example.demo.entity.User;
 import com.example.demo.service.interf.SsoService;
 import com.example.demo.service.interf.UserService;
 
@@ -106,6 +105,7 @@ public class SSOController {
     // 4. Logout 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(@RequestHeader("Authorization") String authHeader) {
+        log.info("REST request to logout user with authHeader: {}", authHeader);
         String token = authHeader.substring(7);
         ssoService.logout(token);
         return ResponseEntity.ok(ApiResponse.<String>builder()

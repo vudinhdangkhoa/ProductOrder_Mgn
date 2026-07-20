@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
@@ -129,5 +130,16 @@ public class ProductionController {
         );
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getMethodName() {
+        List<ProductResponse> products = productionService.getAllProductionsWithoutPagination();
+        return ResponseEntity.ok(ApiResponse.<List<ProductResponse>>builder()
+                .success(true)
+                .data(products)
+                .message("Get all products successfully")
+                .timestamp(LocalDateTime.now())
+                .build());
+    }
+    
 
 }

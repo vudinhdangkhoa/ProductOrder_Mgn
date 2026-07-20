@@ -1,5 +1,6 @@
 package com.example.demo.service.interf;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,8 @@ public interface ProductionService {
     ProductResponse createProduction(CreateProductRequest request);
 
     ProductResponse updateProduction(Long id, UpdateProductRequest request);
+
+    List<ProductResponse> getAllProductionsWithoutPagination();
 
     void deleteProduction(Long id);
 }

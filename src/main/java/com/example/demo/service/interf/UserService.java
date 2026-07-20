@@ -1,5 +1,7 @@
 package com.example.demo.service.interf;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 
 import com.example.demo.dto.request.CreateUserRequest;
@@ -24,4 +26,6 @@ public interface UserService {
     UserResponse getUserByName(String name);
 
     UserResponse getUserByUsernameAndIsDeletedFalse(String username);
+
+    List<UserResponse> getAllUsersWithoutPagination();
 }

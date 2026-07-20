@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,6 +17,8 @@ import com.example.demo.entity.Line;
 @Repository
 @Transactional(readOnly = true)
 public interface LineRepository extends JpaRepository<Line, Long> {
+
+    List<Line> findAllByIsDeletedFalse();
 
     Optional<Line> findByIdAndIsDeletedFalse(Long id);
 

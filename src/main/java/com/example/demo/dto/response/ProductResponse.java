@@ -17,7 +17,7 @@ public class ProductResponse {
     private String productCode;
     private String name;
     private String description;
-    private Boolean isActive;
+    private Boolean isDeleted;
     private Long categoryId;
     private String categoryName;
     private LocalDateTime createdAt;

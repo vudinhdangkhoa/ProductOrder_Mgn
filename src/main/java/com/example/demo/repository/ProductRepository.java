@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +22,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByProductCodeAndIsDeletedFalse(String productCode);
 
     boolean existsByProductCode(String productCode);
+
+    List<Product> findAllByIsDeletedFalse();
 
     Page<Product> findAllByIsDeletedFalse(Pageable pageable);
 

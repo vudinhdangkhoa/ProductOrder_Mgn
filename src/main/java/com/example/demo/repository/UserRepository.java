@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -31,6 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
     
     Page<User> findAllByIsDeletedFalse(Pageable pageable);
+
+    List<User> findAllByIsDeletedFalse();
 
     // JPQL Query: Phục vụ tìm kiếm trên Dashboard
     @Query("SELECT u FROM User u " +

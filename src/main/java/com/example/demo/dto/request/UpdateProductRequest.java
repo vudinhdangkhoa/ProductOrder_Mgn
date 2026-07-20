@@ -24,6 +24,5 @@ public class UpdateProductRequest {
     @Size(max = 255, message = "Mô tả tối đa 255 ký tự")
     private String description;
 
-    @NotBlank(message = "Trạng thái không được để trống")
-    private Boolean isActive;
+
 }

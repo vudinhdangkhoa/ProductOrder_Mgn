@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -108,6 +109,12 @@ public class ProductionServiceImpl implements ProductionService {
 
         return;
         
+    }
+
+    @Override
+    public List<ProductResponse> getAllProductionsWithoutPagination() {
+        List<Product> products = productRepository.findAllByIsDeletedFalse();
+        return productMapper.toResponseList(products);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
@@ -104,6 +106,17 @@ public class UserController {
                 .success(true)
                 .message("User profile retrieved successfully")
                 .data(userResponse)
+                .build());
+    }
+    
+    @GetMapping("list")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getMethodName() {
+        List<UserResponse> users = userService.getAllUsersWithoutPagination();
+        return ResponseEntity.ok(ApiResponse.<List<UserResponse>>builder()
+                .success(true)
+                .data(users)
+                .message("Get all users successfully")
+                .timestamp(LocalDateTime.now())
                 .build());
     }
     
