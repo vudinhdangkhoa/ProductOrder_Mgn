@@ -60,7 +60,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         // check start date and end date
         if (request.getStartDate() != null && request.getEndDate() != null) {
             if (request.getStartDate().isAfter(request.getEndDate())) {
-                throw new BusinessException("INVALID_DATE_RANGE", "Start date cannot be after end date");
+                throw new BusinessException("INVALID_DATE_RANGE", "ngay bat dau phai nho hon ngay ket thuc");
             }
         }
 
@@ -68,7 +68,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         List<ProductionOrder> existingOrders = orderRepository.findAllByLineIdAndIsDeletedFalse(request.getLineId());
         if (DateUtils.isTimeConflict(existingOrders, request)) {
             throw new BusinessException("TIME_CONFLICT",
-                    "The specified time range conflicts with existing production orders for the same line");
+                    "thoi gian bat dau va ket thuc cua lenh san xuat bi trung voi lenh san xuat khac tren cung mot line");
         }
 
         ProductionOrder order = orderMapper.toEntity(request);
@@ -140,6 +140,18 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
                     "Cannot update released, completed, cancelled or deleted order");
         }
 
+        // Check for time conflicts with existing production orders for the same line
+        // Check for time conflicts with existing production orders for the same line
+        List<ProductionOrder> existingOrders = orderRepository.findAllByLineIdAndIsDeletedFalse(order.getLine().getId());
+        CreateProductionOrderRequest newOrderRequest = new CreateProductionOrderRequest();
+        newOrderRequest.setStartDate(request.getStartDate());
+        newOrderRequest.setEndDate(request.getEndDate());
+
+        if (DateUtils.isTimeConflict(existingOrders, newOrderRequest)) {
+            throw new BusinessException("TIME_CONFLICT",
+                    "thoi gian bat dau va ket thuc cua lenh san xuat bi trung voi lenh san xuat khac tren cung mot line");
+        }
+
         orderMapper.updateEntityFromRequest(request, order);
         ProductionOrder updated = orderRepository.save(order);
 
@@ -178,12 +190,16 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
     @Override
     @Transactional
     public Page<ProductionOrderResponse> getOrder(Pageable pageable, Optional<ProductionOrderStatus> status,
-            Optional<Long> lineId, Optional<Long> assignedUserId, Optional<LocalDate> startDate,
+            Optional<Long> lineId, Optional<String> assignedUserUserName, Optional<LocalDate> startDate,
             Optional<LocalDate> endDate, Optional<String> POCode) {
+            
+            User user = userRepository.findByUsernameAndIsDeletedFalse(assignedUserUserName.orElse(null))
+                .orElse(null);
+        
         return orderRepository.searchOrders(
                 status.orElse(null),
                 lineId.orElse(null),
-                assignedUserId.orElse(null),
+                user != null ? user.getId() : null,
                 startDate.orElse(null),
                 endDate.orElse(null),
                 POCode.orElse(null),
@@ -192,7 +208,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
 
     @Override
     @Transactional
-    public ProductionOrderResponse releaseOrder(Long id, Long userId) {
+    public ProductionOrderResponse releaseOrder(Long id, String userName) {
         log.info("Releasing production order id: {}", id);
         ProductionOrder order = orderRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ProductionOrder", id));
@@ -203,12 +219,15 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
 
         order.setStatus(ProductionOrderStatus.RELEASED);
         ProductionOrder updated = orderRepository.save(order);
+       
+        User user = userRepository.findByUsernameAndIsDeletedFalse(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("Khong tim thay user", 0));
 
         // update audit log
         AuditLogPOResponse auditLogResponse = AuditLogPOResponse.builder()
                 .productOrderId(updated.getId())
                 .action(ProductionOrderStatus.RELEASED)
-                .userId(userId)
+                .userId(user.getId())
                 .createdAt(java.time.LocalDateTime.now())
                 .build();
         auditLogPOService.saveAuditLog(auditLogResponse);

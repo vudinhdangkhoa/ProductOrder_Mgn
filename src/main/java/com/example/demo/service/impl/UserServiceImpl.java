@@ -12,6 +12,7 @@ import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
+import com.example.demo.entity.enums.UserRole;
 import com.example.demo.exception.DuplicateResourceException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.UserMapper;
@@ -166,7 +167,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> getAllUsersWithoutPagination() {
-        return userMapper.toResponseList(userRepository.findAllByIsDeletedFalse());
+
+        Role role = roleRepository.findByNameRole(UserRole.OPERATOR)
+                .orElseThrow(() -> new ResourceNotFoundException("Role USER không tồn tại", 0));
+
+        return userMapper.toResponseList(userRepository.findAllByIsDeletedFalseAndRole_Id(role.getId()));
     }
 
 }

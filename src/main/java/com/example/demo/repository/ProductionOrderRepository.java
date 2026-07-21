@@ -29,7 +29,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
         @Query("SELECT po FROM ProductionOrder po " +
                         "WHERE po.isDeleted = false " +
                         "AND (:lineId IS NULL OR po.line.id = :lineId) " +
-                        "AND (po.startDate >= CURRENT_DATE)"+
+                      
                 "AND (po.status='RELEASED' OR po.status='IN_PROGRESS')")
                         
         List<ProductionOrder> findAllByLineIdAndIsDeletedFalse(

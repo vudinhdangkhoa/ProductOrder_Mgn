@@ -123,14 +123,14 @@ public class ProductionOrderController {
             @RequestParam(defaultValue = "DESC") String sortDir,
             @RequestParam(required = false) ProductionOrderStatus status,
             @RequestParam(required = false) Long lineId,
-            @RequestParam(required = false) Long assignedUserId,
+            @RequestParam(required = false) String assignedUserUserName,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String POCode
         ) {
 
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-        Page<ProductionOrderResponse> data = productionOrderService.getOrder(pageable, Optional.ofNullable(status), Optional.ofNullable(lineId), Optional.ofNullable(assignedUserId), Optional.ofNullable(startDate), Optional.ofNullable(endDate), Optional.ofNullable(POCode));
+        Page<ProductionOrderResponse> data = productionOrderService.getOrder(pageable, Optional.ofNullable(status), Optional.ofNullable(lineId), Optional.ofNullable(assignedUserUserName), Optional.ofNullable(startDate), Optional.ofNullable(endDate), Optional.ofNullable(POCode));
         
         return ResponseEntity.ok(ApiResponse.<PageResponse<ProductionOrderResponse>>builder()
                 .success(true)
@@ -159,10 +159,10 @@ public class ProductionOrderController {
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAuthority('ORDER_PROCESS')") // Chỉ cho phép người dùng có quyền ORDER_UPDATE truy cập
     @Operation(summary = "Cập nhật trạng thái lệnh sản xuất")
-    public ResponseEntity<ApiResponse<Void>> updateOrderStatus(@PathVariable Long id,@RequestParam Long userId, @RequestParam ProductionOrderStatus entity) {
+    public ResponseEntity<ApiResponse<Void>> updateOrderStatus(@PathVariable Long id,Authentication authentication, @RequestParam ProductionOrderStatus entity) {
         //TODO: process PUT request
-        
-        productionOrderService.completeOrder(id, userId, entity);
+         UserResponse user = userService.getUserByUsernameAndIsDeletedFalse(authentication.getName());
+        productionOrderService.completeOrder(id, user.getId(), entity);
 
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
@@ -173,10 +173,10 @@ public class ProductionOrderController {
 
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('ORDER_CANCEL')") // Chỉ cho phép người dùng có quyền ORDER_CANCEL truy cập
-    public ResponseEntity<ApiResponse<Void>> cancelOrder(@PathVariable Long id, @RequestParam String reason, @RequestParam Long userId) {
+    public ResponseEntity<ApiResponse<Void>> cancelOrder(@PathVariable Long id, @RequestParam String reason, Authentication authentication) {
         //TODO: process PUT request
-        
-        productionOrderService.cancelOrder(id, userId, reason);
+        UserResponse user = userService.getUserByUsernameAndIsDeletedFalse(authentication.getName());
+        productionOrderService.cancelOrder(id, user.getId(), reason);
 
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
@@ -187,8 +187,9 @@ public class ProductionOrderController {
 
     @PutMapping("/{id}/release")
     @PreAuthorize("hasAuthority('ORDER_RELEASE')") // Chỉ cho phép người dùng
-    public ResponseEntity<ApiResponse<Void>> releaseOrder(@PathVariable Long id, @RequestParam Long userId) {
-        productionOrderService.releaseOrder(id, userId);
+    @Operation(summary = "Phát hành lệnh sản xuất")
+    public ResponseEntity<ApiResponse<Void>> releaseOrder(@PathVariable Long id, @RequestParam String userName) {
+        productionOrderService.releaseOrder(id, userName);
 
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
