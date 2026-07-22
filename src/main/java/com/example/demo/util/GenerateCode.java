@@ -23,4 +23,11 @@ public final class GenerateCode {
 
     }
 
+    public static String generateLineCode() {
+
+        String code = "L" + System.currentTimeMillis();
+        return code;
+
+    }
+
 }

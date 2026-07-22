@@ -9,12 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.dto.request.CreateUserRequest;
 import com.example.demo.dto.request.UpdateUserRequest;
 import com.example.demo.dto.response.PageResponse;
+import com.example.demo.dto.response.RoleResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.entity.enums.UserRole;
 import com.example.demo.exception.DuplicateResourceException;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.mapper.RoleMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final JwtTokenProvider jwtTokenProvider;
-   
+    private final RoleMapper roleMapper;
 
     @Override
     public UserResponse getUserByName(String name) {
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public PageResponse<UserResponse> getAllUsers(Pageable pageable) {
 
-        return PageResponse.fromPage(userRepository.findAllByIsDeletedFalse(pageable)
+        return PageResponse.fromPage(userRepository.findAll(pageable)
                 .map(userMapper::toResponse));
     }
 
@@ -141,6 +143,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void unlockUser(Long id) {
+        User user = userRepository.findByIdAndIsDeletedTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại", id));
+
+        user.setIsDeleted(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public void updateUserRole(Long userId, Long roleId) {
         
         // Kiểm tra xem người dùng có tồn tại và chưa bị xóa
@@ -166,12 +178,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getAllUsersWithoutPagination() {
+    public List<UserResponse> getAllOperatorUsersWithoutPagination() {
 
         Role role = roleRepository.findByNameRole(UserRole.OPERATOR)
                 .orElseThrow(() -> new ResourceNotFoundException("Role USER không tồn tại", 0));
 
         return userMapper.toResponseList(userRepository.findAllByIsDeletedFalseAndRole_Id(role.getId()));
+    }
+
+    @Override
+    public List<UserResponse> getAllUsersWithoutPagination() {
+
+
+        return userMapper.toResponseList(userRepository.findAllByIsDeletedFalse());
+    }
+
+    @Override
+    public List<RoleResponse> getAllRolesWithoutPagination() {
+        List<Role> roles = roleRepository.findAll();
+        return roleMapper.toResponseList(roles);
     }
 
 }

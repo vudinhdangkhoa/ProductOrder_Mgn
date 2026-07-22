@@ -29,11 +29,17 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
         @Query("SELECT po FROM ProductionOrder po " +
                         "WHERE po.isDeleted = false " +
                         "AND (:lineId IS NULL OR po.line.id = :lineId) " +
-                      
-                "AND (po.status='RELEASED' OR po.status='IN_PROGRESS')")
-                        
+
+                        "AND (po.status='RELEASED' OR po.status='IN_PROGRESS')")
+
         List<ProductionOrder> findAllByLineIdAndIsDeletedFalse(
                         @Param("lineId") Long lineId);
+
+        @Query("SELECT po FROM ProductionOrder po " +
+                        "WHERE po.isDeleted = false " +
+                        "AND (:lineId IS NULL OR po.line.id = :lineId) " +
+                        "AND (po.status='RELEASED' OR po.status='IN_PROGRESS' OR po.status='DRAFT')")
+        Page<ProductionOrder> findAllByLineIdAndIsDeletedFalse(Long lineId, Pageable pageable);
 
         @Query("SELECT po FROM ProductionOrder po " +
                         "WHERE po.isDeleted = false " +
@@ -41,7 +47,7 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
                         "AND (po.status='DRAFT')")
         List<ProductionOrder> findAllDraftByLineIdAndIsDeletedFalse(
                         @Param("lineId") Long lineId);
-        
+
         Page<ProductionOrder> findAllByIsDeletedFalse(Pageable pageable);
 
         // JPQL Query cực kỳ quan trọng cho tính năng Lọc nhiều tiêu chí của Dashboard

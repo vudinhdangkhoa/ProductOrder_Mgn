@@ -14,8 +14,11 @@ import com.example.demo.dto.response.PageResponse;
 import com.example.demo.dto.response.ProductionOrderResponse;
 import com.example.demo.entity.Line;
 import com.example.demo.mapper.LineMapper;
+import com.example.demo.mapper.ProductionOrderMapper;
 import com.example.demo.repository.LineRepository;
+import com.example.demo.repository.ProductionOrderRepository;
 import com.example.demo.service.interf.LineService;
+import com.example.demo.util.GenerateCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,8 @@ public class LineServiceImpl implements LineService {
 
     private final LineRepository lineRepository;
     private final LineMapper lineMapper;
+    private final ProductionOrderRepository productionOrderRepository;
+    private final ProductionOrderMapper productionOrderMapper;
 
     @Override
     public LineResponse getLineById(Long lineId) {
@@ -43,6 +48,9 @@ public class LineServiceImpl implements LineService {
         // Implement the logic to create a new line
 
         Line line= lineMapper.toEntity(lineResponse);
+
+        line.setLineCode(GenerateCode.generateLineCode());
+
         lineRepository.save(line);
 
         return lineMapper.toResponse(line);
@@ -63,12 +71,14 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    public List<ProductionOrderResponse> getPObyLineId(Long lineId) {
+    public PageResponse<ProductionOrderResponse> getPObyLineId(Long lineId,Pageable pageable) {
         // Implement the logic to retrieve production orders by line ID
 
+        Page<ProductionOrderResponse> productionOrders = productionOrderRepository.findAllByLineIdAndIsDeletedFalse(lineId, pageable)
+                .map(productionOrderMapper::toResponse);
+              
         
-
-        return null;
+        return PageResponse.fromPage(productionOrders);
     }
 
     @Override

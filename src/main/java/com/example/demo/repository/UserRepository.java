@@ -20,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Derived Query Methods
     Optional<User> findByIdAndIsDeletedFalse(Long id);
+
+    Optional<User> findByIdAndIsDeletedTrue(Long id);
     
     Optional<User> findByEmailAndIsDeletedFalse(String email);
     
@@ -34,6 +36,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByIsDeletedFalse(Pageable pageable);
 
     List<User> findAllByIsDeletedFalseAndRole_Id(Long roleId);
+
+     List<User> findAllByIsDeletedFalse();
+    
+    @Override
+     Page<User> findAll(Pageable pageable);
 
     // JPQL Query: Phục vụ tìm kiếm trên Dashboard
     @Query("SELECT u FROM User u " +

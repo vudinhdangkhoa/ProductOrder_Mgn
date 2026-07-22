@@ -13,7 +13,7 @@ import com.example.demo.dto.response.ProductionOrderResponse;
 
 public interface LineService {
 
-    List<ProductionOrderResponse> getPObyLineId(Long lineId);
+    PageResponse<ProductionOrderResponse> getPObyLineId(Long lineId, Pageable pageable);
 
     LineResponse getLineById(Long lineId);
 

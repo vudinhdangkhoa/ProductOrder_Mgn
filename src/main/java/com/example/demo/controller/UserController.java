@@ -22,6 +22,7 @@ import com.example.demo.dto.request.CreateUserRequest;
 import com.example.demo.dto.request.UpdateUserRequest;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.PageResponse;
+import com.example.demo.dto.response.RoleResponse;
 import com.example.demo.dto.response.UserResponse;
 import com.example.demo.service.interf.UserService;
 
@@ -78,9 +79,9 @@ public class UserController {
                 .build());
     }
 
-    @PutMapping("/{id}/role")
+    @PutMapping("/{id}/{roleId}")
     @PreAuthorize("hasAuthority('USER_ROLE_ASSIGN')")
-    public ResponseEntity<ApiResponse<String>> updateUserRole(@PathVariable Long id, @RequestBody Long roleId) {
+    public ResponseEntity<ApiResponse<String>> updateUserRole(@PathVariable Long id, @PathVariable Long roleId) {
         
         userService.updateUserRole(id, roleId);
         return ResponseEntity.ok(ApiResponse.<String>builder()
@@ -109,8 +110,19 @@ public class UserController {
                 .build());
     }
     
+    @GetMapping("list-operator")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllOperatorUsersList() {
+        List<UserResponse> users = userService.getAllOperatorUsersWithoutPagination();
+        return ResponseEntity.ok(ApiResponse.<List<UserResponse>>builder()
+                .success(true)
+                .data(users)
+                .message("Get all operator users successfully")
+                .timestamp(LocalDateTime.now())
+                .build());
+    }
+    
     @GetMapping("list")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getMethodName() {
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersList() {
         List<UserResponse> users = userService.getAllUsersWithoutPagination();
         return ResponseEntity.ok(ApiResponse.<List<UserResponse>>builder()
                 .success(true)
@@ -120,5 +132,38 @@ public class UserController {
                 .build());
     }
     
+    @GetMapping("roles")
+    public ResponseEntity<ApiResponse<List<RoleResponse>>> getAllRolesList() {
+        List<RoleResponse> roles = userService.getAllRolesWithoutPagination();
+        return ResponseEntity.ok(ApiResponse.<List<RoleResponse>>builder()
+                .success(true)
+                .data(roles)
+                .message("Get all roles successfully")
+                .timestamp(LocalDateTime.now())
+                .build());
+    }
 
+    @PutMapping("/lock/{id}")
+    public ResponseEntity<ApiResponse<String>> LockUser(@PathVariable Long id) {
+        //TODO: process PUT request
+        
+        userService.deleteUser(id);
+
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .success(true)
+                .message("Lock User  successfully")
+                .build());
+    }
+
+    @PutMapping("unlock/{id}")
+    public ResponseEntity<ApiResponse<String>> unlockUser(@PathVariable Long id) {
+        //TODO: process PUT request
+        
+        userService.unlockUser(id); 
+
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .success(true)
+                .message("Unlock User  successfully")
+                .build());
+    }
 }
