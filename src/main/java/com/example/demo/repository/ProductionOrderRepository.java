@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.response.LineStatusCountResponse;
 import com.example.demo.entity.ProductionOrder;
 import com.example.demo.entity.enums.ProductionOrderStatus;
 
@@ -69,6 +70,43 @@ public interface ProductionOrderRepository extends JpaRepository<ProductionOrder
 
         // Đếm số lượng lệnh theo trạng thái phục vụ Chart/Dashboard
         long countByStatusAndIsDeletedFalse(ProductionOrderStatus status);
+
+        @Query("SELECT COUNT(po) FROM ProductionOrder po " +
+                        "WHERE po.isDeleted = false " +
+                        "AND po.status = :status " +
+                        "AND ((FUNCTION('MONTH', po.startDate) = :month AND FUNCTION('YEAR', po.startDate) = :year) " +
+                        "OR (FUNCTION('MONTH', po.endDate) = :month AND FUNCTION('YEAR', po.endDate) = :year))")
+        Long countByStatusByMonth(@Param("status") ProductionOrderStatus status,
+                        @Param("month") int month,
+                        @Param("year") int year);
+
+        @Query("SELECT new com.example.demo.dto.response.LineStatusCountResponse(l.name, po.status, COUNT(po)) " +
+                        "FROM ProductionOrder po " +
+                        "JOIN po.line l " +
+                        "WHERE po.isDeleted = false " +
+                        "AND ((FUNCTION('MONTH', po.startDate) = :month AND FUNCTION('YEAR', po.startDate) = :year) " +
+                        "OR (FUNCTION('MONTH', po.endDate) = :month AND FUNCTION('YEAR', po.endDate) = :year)) " +
+                        "GROUP BY l.name, po.status")
+        List<LineStatusCountResponse> countByLineAndStatus(@Param("month") int month, @Param("year") int year);
+
+        @Query("SELECT l.name, po.status, po.orderCode, po.startDate, po.endDate, po.quantity, p.name, u.fullName " +
+                        "FROM ProductionOrder po " +
+                        "JOIN po.line l " +
+                        "JOIN po.product p " +
+                        "JOIN po.assignedUser u " +
+                        "WHERE po.isDeleted = false " +
+                        "AND po.line.id = :lineId " +
+                        "ORDER BY " +
+                        "    CASE po.status " +
+                        "        WHEN 'IN_PROGRESS' THEN 1 " +
+                        "        WHEN 'COMPLETED' THEN 2 " +
+                        "        WHEN 'RELEASED' THEN 3 " +
+                        "        WHEN 'DRAFT' THEN 4 " +
+                        "        ELSE 5 " +
+                        "    END, " +
+                        "    po.startDate DESC NULLS LAST, " +
+                        "    po.createdAt DESC")
+        List<Object[]> findOrdersByLineId(@Param("lineId") Long lineId);
 
         @Modifying
         @Transactional

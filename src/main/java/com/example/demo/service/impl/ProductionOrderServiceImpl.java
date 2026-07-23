@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.dto.request.CreateProductionOrderRequest;
 import com.example.demo.dto.request.UpdateProductionOrderRequest;
 import com.example.demo.dto.response.AuditLogPOResponse;
+import com.example.demo.dto.response.LineCurrentOrderResponse;
+import com.example.demo.dto.response.LineStatusCountResponse;
 import com.example.demo.dto.response.ProductionOrderResponse;
 import com.example.demo.entity.Line;
 import com.example.demo.entity.Product;
@@ -153,6 +155,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         }
 
         orderMapper.updateEntityFromRequest(request, order);
+        order.setUpdatedAt(java.time.LocalDateTime.now());
         ProductionOrder updated = orderRepository.save(order);
 
         // update audit log
@@ -218,6 +221,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         }
 
         order.setStatus(ProductionOrderStatus.RELEASED);
+        order.setUpdatedAt(java.time.LocalDateTime.now());
         ProductionOrder updated = orderRepository.save(order);
        
         User user = userRepository.findByUsernameAndIsDeletedFalse(userName)
@@ -252,6 +256,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         }
 
         order.setStatus(request);
+        order.setUpdatedAt(java.time.LocalDateTime.now());
         ProductionOrder updated = orderRepository.save(order);
 
         // update audit log
@@ -284,6 +289,7 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
 
         order.setStatus(ProductionOrderStatus.CANCELLED);
         order.setReason(reason); // Set the cancellation reason
+        order.setUpdatedAt(java.time.LocalDateTime.now());
         ProductionOrder updated = orderRepository.save(order);
 
         // update audit log
@@ -358,6 +364,81 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
 
         return conflictGroupsMap;
     }
+
+    @Override
+    public Long countOrdersByStatusByMonth(ProductionOrderStatus status, LocalDate date){
+
+        return orderRepository.countByStatusByMonth(status, date.getMonthValue(), date.getYear());
+
+    }
+
+    @Override
+    public Map<String,Map<String,Long>> countOrdersByLineAndStatus(LocalDate date){
+
+        List<LineStatusCountResponse> responses = orderRepository.countByLineAndStatus(date.getMonthValue(), date.getYear());
+        Map<String,Map<String,Long>> result = new LinkedHashMap<>();
+
+        for (LineStatusCountResponse response : responses) {
+            result.computeIfAbsent(response.getLineName(), k -> new LinkedHashMap<>()).put(response.getStatus().toString(), response.getCount());
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<LineCurrentOrderResponse> getCurrentOrdersForAllLines() {
+    
+        List<Line> lines = lineRepository.findAllByIsDeletedFalse();
+        List<LineCurrentOrderResponse> currentOrders = new ArrayList<>();
+
+        for(Line line: lines){
+
+            List<Object[]> orders = orderRepository.findOrdersByLineId(line.getId());
+
+            if(orders.isEmpty()){
+                continue; // Nếu không có lệnh nào cho line này, bỏ qua
+            }
+
+             // Lọc theo ưu tiên status
+            ProductionOrderStatus[] priority = {
+                ProductionOrderStatus.IN_PROGRESS,
+                ProductionOrderStatus.COMPLETED,
+                ProductionOrderStatus.RELEASED,
+                ProductionOrderStatus.DRAFT
+            };
+
+           Object[] selectedOrder = null;
+            for (ProductionOrderStatus status : priority) {
+                Optional<Object[]> found = orders.stream()
+                    .filter(row -> row[1] == status)
+                    .findFirst(); // Đã sorted theo startDate DESC
+                    
+                if (found.isPresent()) {
+                    selectedOrder = found.get();
+                    break;
+                }
+            }
+            
+            if (selectedOrder != null) {
+                currentOrders.add(new LineCurrentOrderResponse(
+                    (String) selectedOrder[0],
+                    (ProductionOrderStatus) selectedOrder[1],
+                    (String) selectedOrder[2],
+                    (LocalDate) selectedOrder[3],
+                    (LocalDate) selectedOrder[4],
+                    (int) selectedOrder[5], 
+                    (String) selectedOrder[6],
+                    (String) selectedOrder[7]
+                ));
+            }
+
+        }
+
+        return currentOrders;
+    
+    }
+
+
 
     private boolean isOverlapping(ProductionOrderResponse o1, ProductionOrderResponse o2) {
         return o1.getStartDate().isBefore(o2.getEndDate()) &&

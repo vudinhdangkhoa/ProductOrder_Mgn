@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import com.example.demo.dto.request.CreateProductionOrderRequest;
 import com.example.demo.dto.request.UpdateProductionOrderRequest;
 import com.example.demo.dto.response.AuditLogPOResponse;
+import com.example.demo.dto.response.LineCurrentOrderResponse;
 import com.example.demo.dto.response.ProductionOrderResponse;
 import com.example.demo.entity.enums.ProductionOrderStatus;
 
@@ -33,4 +34,10 @@ public interface ProductionOrderService {
     ProductionOrderResponse completeOrder(Long id, Long userId, ProductionOrderStatus request);
     ProductionOrderResponse cancelOrder(Long id, Long userId, String reason);
     Map<String,List<ProductionOrderResponse>> listConflictOrdersDRAFT(Long lineId);
+
+    Long countOrdersByStatusByMonth(ProductionOrderStatus status, LocalDate date);
+
+    Map<String,Map<String,Long>> countOrdersByLineAndStatus(LocalDate date);
+
+    List<LineCurrentOrderResponse> getCurrentOrdersForAllLines();
 }
